@@ -20,7 +20,6 @@ class ListItem extends StatefulWidget {
 
 class _ListItemState extends State<ListItem>
     with SingleTickerProviderStateMixin {
-
   AnimationController _controller;
   Animation _expansionAnimation;
 
@@ -136,36 +135,62 @@ class _ListItemState extends State<ListItem>
                   ),
                 ],
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                heightFactor: _controller.value,
-                child: SizedBox(height: 8,),
-              ),
+              // Align(
+              //   alignment: Alignment.bottomCenter,
+              //   heightFactor: _controller.value,
+              //   child: SizedBox(height: 8,),
+              // ),
               ClipRect(
                 child: Align(
-                  alignment: Alignment.center,
+                  alignment: Alignment.topCenter,
                   heightFactor: _controller.value,
                   child: ListView.builder(
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
+                    padding: const EdgeInsets.only(
+                      right: 12,
+                      left: 12,
+                      top: 24,
+                    ),
                     // itemExtent: 24,
                     itemCount: 4,
                     itemBuilder: (context, position) {
                       return Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2,),
-                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8,),
-                        color: position.isEven ? Theme.of(context).primaryColorLight.withOpacity(0.3) : Colors.transparent,
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 12,
+                        ),
+                        color: position.isEven
+                            ? Theme.of(context)
+                                .primaryColorLight
+                                .withOpacity(0.3)
+                            : Colors.transparent,
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
+                              flex: 3,
                               child: Line(
-                                color: Theme.of(context).primaryColor,
+                                color: Theme.of(context).primaryColorLight,
+                                height: 10,
+                                width: 48,
                               ),
                             ),
-                            SizedBox(width: 8,),
+                            SizedBox(
+                              width: 48,
+                            ),
                             Expanded(
+                              flex: 2,
                               child: Line(
-                                color: Theme.of(context).primaryColor,
+                                color: Theme.of(context)
+                                    .primaryColor
+                                    .withOpacity(0.5),
+                                height: 10,
+                                width: 36,
                               ),
                             ),
                           ],
