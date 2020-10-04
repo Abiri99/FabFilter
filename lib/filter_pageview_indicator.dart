@@ -35,7 +35,7 @@ class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator> {
     return IgnorePointer(
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: 10,
+        itemCount: 5,
         itemExtent: 100,
         controller: _controller,
         scrollDirection: Axis.horizontal,
@@ -50,11 +50,13 @@ class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator> {
               vertical: 24,
             ),
             child: Transform.scale(
+              alignment: Alignment.center,
               scale: 0.8 + (1 - diff) * 0.2,
               child: Line(
                 key: ValueKey(position),
                 color: widget.currentPage == position ? Colors.white : Color(0xff356E8C),
-                height: 8,
+                height: 10,
+                withBadge: true,
               ),
             ),
           );
