@@ -23,6 +23,7 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
 
   Animation<double> _fabRevealAnimation;
   Animation<double> _fabIconFallAnimation;
+  Animation<double> _actionIconTranslateAnimation;
 
   @override
   void initState() {
@@ -43,7 +44,11 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
         0.2,
         curve: Curves.easeOut,
       ),
-      reverseCurve: Curves.easeOut,
+      // reverseCurve: Interval(
+      //   0,
+      //   0.2,
+      //   curve: Curves.easeOut,
+      // ),
     );
     _yAxisPositionAnimation = CurvedAnimation(
       parent: widget.controller,
@@ -52,7 +57,11 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
         0.2,
         curve: Curves.easeIn,
       ),
-      reverseCurve: Curves.easeIn,
+      // reverseCurve: Interval(
+      //   0,
+      //   0.2,
+      //   curve: Curves.easeIn,
+      // ),
     );
     _fabRevealAnimation = CurvedAnimation(
       parent: widget.controller,
@@ -61,7 +70,11 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
         0.5,
         curve: Curves.easeInOut,
       ),
-      reverseCurve: Curves.easeInOut,
+      // reverseCurve: Interval(
+      //   0.2,
+      //   0.5,
+      //   curve: Curves.easeInOut,
+      // ),
     );
     _fabIconFallAnimation = CurvedAnimation(
       parent: widget.controller,
@@ -69,6 +82,20 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
         0.2,
         0.5,
         curve: Curves.easeInOut,
+      ),
+      // reverseCurve: Interval(
+      //   0.2,
+      //   0.5,
+      //   curve: Curves.easeInOut,
+      // ),
+    );
+
+    _actionIconTranslateAnimation = CurvedAnimation(
+      parent: widget.controller,
+      curve: Interval(
+        0.5,
+        0.7,
+        curve: Curves.easeOut,
       ),
     );
 
@@ -165,6 +192,8 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                   ),
                 ),
               ),
+
+              /// PageView
               IgnorePointer(
                 ignoring: true,
                 child: Container(
@@ -174,10 +203,17 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                   ),
                 ),
               ),
+
+              /// Action Icons
               Positioned(
-                bottom: (1 - _fabIconFallAnimation.value) * (_yAxisPositionAnimation.value * (constraints.maxHeight/2 - 70)),
+                bottom: (1 - _fabIconFallAnimation.value) *
+                    (_yAxisPositionAnimation.value *
+                        (constraints.maxHeight / 2 - 70)),
                 right: (_xAxisPositionAnimation.value *
-                    (MediaQuery.of(context).size.width / 2 - 56)),
+                        (MediaQuery.of(context).size.width / 2 - 56)) -
+                    (_actionIconTranslateAnimation.value *
+                        constraints.maxWidth /
+                        6),
                 child: GestureDetector(
                   onTap: () {
                     // if (widget.controller.status == AnimationStatus.completed) {
@@ -192,6 +228,29 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                       width: 64,
                       margin: const EdgeInsets.all(24),
                       child: FilterIcon(),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0 +
+                    (_actionIconTranslateAnimation.value *
+                        constraints.maxWidth /
+                        6),
+                child: GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    height: 64,
+                    width: 64,
+                    margin: const EdgeInsets.all(24),
+                    child: Opacity(
+                      opacity: _actionIconTranslateAnimation.value,
+                      child: Icon(
+                        Icons.close,
+                        size: 28,
+                        color: Color(0xff8EB8C6),
+                      ),
                     ),
                   ),
                 ),
