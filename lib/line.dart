@@ -6,10 +6,11 @@ class Line extends StatelessWidget {
   final double height;
 
   Line({
+    Key key,
     this.color,
     this.width = double.infinity,
     this.height = 16,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               ],
             ),
             Positioned(
-              top: mq.size.height - 360,
+              top: mq.size.height - 380,
               right: 0,
               left: 0,
               bottom: 0,
