@@ -32,8 +32,8 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
     // );
     _revealController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 2000),
-      reverseDuration: Duration(milliseconds: 2000),
+      duration: Duration(milliseconds: 600),
+      reverseDuration: Duration(milliseconds: 600),
     );
     _xAxisPositionAnimation = CurvedAnimation(
       parent: widget.controller,
@@ -122,7 +122,7 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                         color: Theme.of(context).primaryColorDark,
                         borderRadius: BorderRadius.all(
                           Radius.circular(
-                              (1 - _fabRevealAnimation.value) * 100),
+                              (1 - _fabRevealAnimation.value) * 600),
                         ),
                         boxShadow: [
                           BoxShadow(
@@ -152,15 +152,15 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                       (MediaQuery.of(context).size.width / 2 - 56) as double),
                   child: GestureDetector(
                     onTap: () {
-                      if (widget.controller.status == AnimationStatus.completed) {
-                        widget.controller.reverse();
-                      } else {
-                        widget.controller.forward();
-                      }
+                      // if (widget.controller.status == AnimationStatus.completed) {
+                      //   widget.controller.reverse();
+                      // } else {
+                      //   widget.controller.forward();
+                      // }
                     },
                     child: Container(
                       height: 64,
-                      width: 63,
+                      width: 64,
                       margin: const EdgeInsets.all(24),
                       child: FilterIcon(),
                     ),

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:fab_filter/list_item_table_row.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -10,9 +11,10 @@ class ListItem extends StatefulWidget {
   final double verticalPadding;
 
   ListItem({
+    Key key,
     this.horizontalMargin = 16,
     this.verticalPadding = 16,
-  });
+  }) : super(key: key);
 
   @override
   _ListItemState createState() => _ListItemState();
@@ -150,7 +152,7 @@ class _ListItemState extends State<ListItem>
                 child: Align(
                   alignment: Alignment.topCenter,
                   heightFactor: _controller.value,
-                  child: ListView.builder(
+                  child: ListView(
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     padding: const EdgeInsets.only(
@@ -159,50 +161,12 @@ class _ListItemState extends State<ListItem>
                       top: 24,
                     ),
                     // itemExtent: 24,
-                    itemCount: 4,
-                    itemBuilder: (context, position) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 12,
-                          horizontal: 12,
-                        ),
-                        color: position.isEven
-                            ? Theme.of(context)
-                                .primaryColorLight
-                                .withOpacity(0.3)
-                            : Colors.transparent,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              flex: 3,
-                              child: Line(
-                                color: Theme.of(context).primaryColorLight,
-                                height: 10,
-                                width: 48,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 48,
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Line(
-                                color: Theme.of(context)
-                                    .primaryColor
-                                    .withOpacity(0.5),
-                                height: 10,
-                                width: 36,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                    children: [
+                      ListItemTableRow(withBackgroundColor: false,),
+                      ListItemTableRow(withBackgroundColor: true,),
+                      ListItemTableRow(withBackgroundColor: false,),
+                      ListItemTableRow(withBackgroundColor: true,),
+                    ],
                   ),
                 ),
               ),

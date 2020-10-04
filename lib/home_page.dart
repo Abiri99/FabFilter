@@ -49,6 +49,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                         child: Opacity(
                           opacity: 1 - _fabPositionController.value * 0.4,
                           child: ListItem(
+                            key: ValueKey(position),
                             horizontalMargin: _fabPositionController.value * 12 + 18,
                             verticalPadding: 20 - _fabPositionController.value * 4,
                           ),
