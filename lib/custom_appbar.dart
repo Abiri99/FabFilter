@@ -30,7 +30,7 @@ class CustomAppBar extends SliverPersistentHeaderDelegate {
                 ),
                 child: Line(
                   width: 180,
-                  height: 16,
+                  height: 12,
                   color: Theme.of(context).primaryColorLight,
                 ),
               ),

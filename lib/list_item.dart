@@ -27,8 +27,8 @@ class _ListItemState extends State<ListItem>
   void initState() {
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 1000),
-      reverseDuration: Duration(milliseconds: 1000),
+      duration: Duration(milliseconds: 400),
+      reverseDuration: Duration(milliseconds: 400),
     );
     _expansionAnimation = CurvedAnimation(
       parent: _controller,
@@ -36,6 +36,12 @@ class _ListItemState extends State<ListItem>
       reverseCurve: Curves.easeInOut,
     );
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override

@@ -3,6 +3,7 @@ import 'package:fab_filter/filter_icon.dart';
 import 'package:fab_filter/line.dart';
 import 'package:flutter/material.dart';
 
+import 'home_bottom_container.dart';
 import 'list_item.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,29 +11,16 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
 
-  Animation _xAxisPositionAnimation;
-  Animation _yAxisPositionAnimation;
+  AnimationController _controller;
 
   @override
   void initState() {
     _controller = AnimationController(
-      vsync: this,
       duration: Duration(milliseconds: 600),
       reverseDuration: Duration(milliseconds: 600),
-    );
-    _xAxisPositionAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-      reverseCurve: Curves.easeOut,
-    );
-    _yAxisPositionAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-      reverseCurve: Curves.easeIn,
+      vsync: this,
     );
     super.initState();
   }
@@ -72,42 +60,11 @@ class _HomePageState extends State<HomePage>
               ],
             ),
             Positioned(
-              bottom: (_yAxisPositionAnimation.value *
-                  (MediaQuery.of(context).size.height / 3 - 56) as double),
-              right: (_xAxisPositionAnimation.value *
-                  (MediaQuery.of(context).size.width / 2 - 56) as double),
-              child: GestureDetector(
-                onTap: () {
-                  if (_controller.status == AnimationStatus.completed) {
-                    _controller.reverse();
-                  } else {
-                    _controller.forward();
-                  }
-                },
-                child: Container(
-                  height: 64,
-                  width: 64,
-                  margin: const EdgeInsets.all(24),
-                  padding: const EdgeInsets.all(8),
-                  child: Center(
-                    child: FilterIcon(),
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColorDark,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(100),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        offset: Offset(0, 15),
-                        blurRadius: 15,
-                        spreadRadius: -8,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              top: MediaQuery.of(context).size.height - 360,
+              right: 0,
+              left: 0,
+              bottom: 0,
+              child: HomeBottomContainer(),
             ),
           ],
         ),
