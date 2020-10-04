@@ -15,12 +15,22 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   AnimationController _fabPositionController;
 
+  Animation<double> _listViewAnimation;
+
   @override
   void initState() {
     _fabPositionController = AnimationController(
       duration: Duration(milliseconds: 2000),
       reverseDuration: Duration(milliseconds: 2000),
       vsync: this,
+    );
+    _listViewAnimation = CurvedAnimation(
+      parent: _fabPositionController,
+      curve: Interval(
+        0,
+        0.2,
+        curve: Curves.easeOut,
+      ),
     );
     super.initState();
   }
@@ -51,11 +61,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   delegate: SliverChildBuilderDelegate(
                     (context, position) {
                       return Opacity(
-                        opacity: 1 - _fabPositionController.value * 0.4,
+                        opacity: 1 - _listViewAnimation.value * 0.4,
                         child: ListItem(
                           key: ValueKey(position),
-                          horizontalMargin: _fabPositionController.value * 12 + 20,
-                          verticalPadding: 20 - _fabPositionController.value * 4,
+                          horizontalMargin: _listViewAnimation.value * 12 + 20,
+                          verticalPadding: 20 - _listViewAnimation.value * 4,
                         ),
                       );
                     },
