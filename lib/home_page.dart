@@ -13,11 +13,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
 
-  AnimationController _controller;
+  AnimationController _fabPositionController;
 
   @override
   void initState() {
-    _controller = AnimationController(
+    _fabPositionController = AnimationController(
       duration: Duration(milliseconds: 600),
       reverseDuration: Duration(milliseconds: 600),
       vsync: this,
@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColorLight,
       body: AnimatedBuilder(
-        animation: _controller,
+        animation: _fabPositionController,
         builder: (context, child) => Stack(
           fit: StackFit.expand,
           children: [
@@ -45,12 +45,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     (context, position) {
                       return Transform.scale(
                         scale: 1.0,
-                        // scale: 1.0 - _controller.value * 0.1,
+                        // scale: 1.0 - _fabPositionController.value * 0.1,
                         child: Opacity(
-                          opacity: 1 - _controller.value * 0.4,
+                          opacity: 1 - _fabPositionController.value * 0.4,
                           child: ListItem(
-                            horizontalMargin: _controller.value * 12 + 18,
-                            verticalPadding: 20 - _controller.value * 4,
+                            horizontalMargin: _fabPositionController.value * 12 + 18,
+                            verticalPadding: 20 - _fabPositionController.value * 4,
                           ),
                         ),
                       );
@@ -64,7 +64,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               right: 0,
               left: 0,
               bottom: 0,
-              child: HomeBottomContainer(),
+              child: HomeBottomContainer(
+                controller: _fabPositionController,
+              ),
             ),
           ],
         ),
