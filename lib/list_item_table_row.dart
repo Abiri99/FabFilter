@@ -26,6 +26,7 @@ class ListItemTableRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          SizedBox(width: 16,),
           Expanded(
             flex: 3,
             child: Line(
@@ -34,8 +35,11 @@ class ListItemTableRow extends StatelessWidget {
               width: 48,
             ),
           ),
-          SizedBox(
-            width: 48,
+          Expanded(
+            flex: 4,
+            child: SizedBox(
+              width: 64,
+            ),
           ),
           Expanded(
             flex: 2,
@@ -45,6 +49,7 @@ class ListItemTableRow extends StatelessWidget {
               width: 36,
             ),
           ),
+          SizedBox(width: 16,),
         ],
       ),
     );

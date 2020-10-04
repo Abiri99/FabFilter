@@ -133,6 +133,8 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
           child: Stack(
             fit: StackFit.expand,
             children: [
+
+              /// Fab background
               Positioned(
                 // top: (1 - _fabRevealAnimation.value) * (320 - (_yAxisPositionAnimation.value * (180 - 70)
                 // as double)),
@@ -178,7 +180,7 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                     decoration: BoxDecoration(
                       color: Theme.of(context).primaryColorDark,
                       borderRadius: BorderRadius.all(
-                        Radius.circular((1 - _fabRevealAnimation.value) * 600),
+                        Radius.circular((1 - _fabRevealAnimation.value) * 1000),
                       ),
                       boxShadow: [
                         BoxShadow(
@@ -208,12 +210,12 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
               Positioned(
                 bottom: (1 - _fabIconFallAnimation.value) *
                     (_yAxisPositionAnimation.value *
-                        (constraints.maxHeight / 2 - 70)),
+                        (constraints.maxHeight / 2 - 70)) + 16 + (1 - _fabIconFallAnimation.value) * 24,
                 right: (_xAxisPositionAnimation.value *
                         (MediaQuery.of(context).size.width / 2 - 56)) -
                     (_actionIconTranslateAnimation.value *
                         constraints.maxWidth /
-                        6),
+                        4) + 40,
                 child: GestureDetector(
                   onTap: () {
                     // if (widget.controller.status == AnimationStatus.completed) {
@@ -224,26 +226,28 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                   },
                   child: IgnorePointer(
                     child: Container(
-                      height: 64,
-                      width: 64,
-                      margin: const EdgeInsets.all(24),
+                      // color: Colors.red,
+                      height: 32,
+                      width: 32,
+                      // margin: const EdgeInsets.all(24),
                       child: FilterIcon(),
                     ),
                   ),
                 ),
               ),
               Positioned(
-                bottom: 0,
-                left: 0 +
+                bottom: 16,
+                left: 16
+                    +
                     (_actionIconTranslateAnimation.value *
                         constraints.maxWidth /
-                        6),
+                        4) - 40,
                 child: GestureDetector(
                   onTap: () {},
                   child: Container(
-                    height: 64,
-                    width: 64,
-                    margin: const EdgeInsets.all(24),
+                    height: 32,
+                    width: 32,
+                    // margin: const EdgeInsets.all(24),
                     child: Opacity(
                       opacity: _actionIconTranslateAnimation.value,
                       child: Icon(
