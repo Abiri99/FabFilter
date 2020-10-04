@@ -18,15 +18,22 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   @override
   void initState() {
     _fabPositionController = AnimationController(
-      duration: Duration(milliseconds: 600),
-      reverseDuration: Duration(milliseconds: 600),
+      duration: Duration(milliseconds: 2000),
+      reverseDuration: Duration(milliseconds: 2000),
       vsync: this,
     );
     super.initState();
   }
 
   @override
+  void dispose() {
+    _fabPositionController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    var mq = MediaQuery.of(context);
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColorLight,
       body: AnimatedBuilder(
@@ -43,16 +50,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, position) {
-                      return Transform.scale(
-                        scale: 1.0,
-                        // scale: 1.0 - _fabPositionController.value * 0.1,
-                        child: Opacity(
-                          opacity: 1 - _fabPositionController.value * 0.4,
-                          child: ListItem(
-                            key: ValueKey(position),
-                            horizontalMargin: _fabPositionController.value * 12 + 18,
-                            verticalPadding: 20 - _fabPositionController.value * 4,
-                          ),
+                      return Opacity(
+                        opacity: 1 - _fabPositionController.value * 0.4,
+                        child: ListItem(
+                          key: ValueKey(position),
+                          horizontalMargin: _fabPositionController.value * 12 + 20,
+                          verticalPadding: 20 - _fabPositionController.value * 4,
                         ),
                       );
                     },
@@ -61,7 +64,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               ],
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height - 360,
+              top: mq.size.height - 360,
               right: 0,
               left: 0,
               bottom: 0,

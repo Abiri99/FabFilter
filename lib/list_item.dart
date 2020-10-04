@@ -70,7 +70,7 @@ class _ListItemState extends State<ListItem>
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.all(
-              Radius.circular(4),
+              Radius.circular(6),
             ),
           ),
           child: Column(
@@ -86,7 +86,7 @@ class _ListItemState extends State<ListItem>
                     ),
                   ),
                   SizedBox(
-                    width: 8,
+                    width: 12,
                   ),
                   Expanded(
                     child: Column(
