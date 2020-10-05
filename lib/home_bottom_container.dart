@@ -4,11 +4,11 @@ import 'filter_icon.dart';
 import 'filter_pageview_indicator.dart';
 
 class HomeBottomContainer extends StatefulWidget {
-  final AnimationController controller;
+  final Function(bool value) animationCallback;
 
   HomeBottomContainer({
-    @required this.controller,
-  }) : assert(controller != null);
+    @required this.animationCallback,
+  }) : assert(animationCallback != null);
 
   @override
   _HomeBottomContainerState createState() => _HomeBottomContainerState();
@@ -16,6 +16,7 @@ class HomeBottomContainer extends StatefulWidget {
 
 class _HomeBottomContainerState extends State<HomeBottomContainer>
     with SingleTickerProviderStateMixin {
+  AnimationController _controller;
 
   Animation<double> _xAxisPositionAnimation;
   Animation<double> _yAxisPositionAnimation;
@@ -27,8 +28,13 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
 
   @override
   void initState() {
+    _controller = AnimationController(
+      duration: Duration(seconds: 2),
+      reverseDuration: Duration(seconds: 2),
+      vsync: this,
+    );
     _xAxisPositionAnimation = CurvedAnimation(
-      parent: widget.controller,
+      parent: _controller,
       curve: Interval(
         0,
         0.2,
@@ -36,7 +42,7 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
       ),
     );
     _yAxisPositionAnimation = CurvedAnimation(
-      parent: widget.controller,
+      parent: _controller,
       curve: Interval(
         0,
         0.2,
@@ -44,7 +50,7 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
       ),
     );
     _fabRevealAnimation = CurvedAnimation(
-      parent: widget.controller,
+      parent: _controller,
       curve: Interval(
         0.2,
         0.5,
@@ -52,7 +58,7 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
       ),
     );
     _fabIconFallAnimation = CurvedAnimation(
-      parent: widget.controller,
+      parent: _controller,
       curve: Interval(
         0.2,
         0.5,
@@ -60,7 +66,7 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
       ),
     );
     _actionIconTranslateAnimation = CurvedAnimation(
-      parent: widget.controller,
+      parent: _controller,
       curve: Interval(
         0.5,
         0.7,
@@ -68,7 +74,7 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
       ),
     );
     _filterSheetAnimation = CurvedAnimation(
-      parent: widget.controller,
+      parent: _controller,
       curve: Interval(
         0.7,
         1.0,
@@ -76,35 +82,41 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
       ),
     );
 
-    // widget.controller.addStatusListener(controllerListener);
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.forward)
+        widget.animationCallback(true);
+      else if (status == AnimationStatus.reverse)
+        widget.animationCallback(false);
+    });
+    // _controller.addStatusListener(_controllerListener);
 
-    // _revealController.addStatusListener(revealListener);
+    // _reveal_controller.addStatusListener(revealListener);
     super.initState();
   }
 
-  // controllerListener(status) {
-  //   if (status == AnimationStatus.completed) _revealController.forward();
+  // _controllerListener(status) {
+  //   if (status == AnimationStatus.completed) _reveal_controller.forward();
   // else if (status == AnimationStatus.dismissed)
-  //   _revealController.reverse();
+  //   _reveal_controller.reverse();
   // }
 
   revealListener(status) {
-    if (status == AnimationStatus.dismissed) widget.controller.reverse();
+    if (status == AnimationStatus.dismissed) _controller.reverse();
   }
 
   @override
   void dispose() {
-    // widget.controller.dispose();
-    // widget.controller.removeListener(() => controllerListener);
-    // _revealController.removeListener(() => revealListener);
-    // _revealController.dispose();
+    _controller.dispose();
+    // _controller.removeListener(() => _controllerListener);
+    // _reveal_controller.removeListener(() => revealListener);
+    // _reveal_controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: widget.controller,
+      animation: _controller,
       builder: (context, child) => LayoutBuilder(
         builder: (context, constraints) => Container(
           // color: Colors.red,
@@ -133,7 +145,6 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-
                       /// Fab background
                       Positioned(
                         // top: (1 - _fabRevealAnimation.value) * (320 - (_yAxisPositionAnimation.value * (180 - 70)
@@ -154,25 +165,26 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                         //     (MediaQuery.of(context).size.width / 2 - 56)),
                         child: GestureDetector(
                           onTap: () {
-                            if (widget.controller.status == AnimationStatus.completed)
-                              widget.controller.reverse();
+                            if (_controller.status == AnimationStatus.completed)
+                              _controller.reverse();
                             else
-                              widget.controller.forward();
-                            // if (_revealController.status == AnimationStatus.completed) {
-                            //   _revealController.reverse();
-                            // } else if (widget.controller.status ==
+                              _controller.forward();
+                            // if (_reveal_controller.status == AnimationStatus.completed) {
+                            //   _reveal_controller.reverse();
+                            // } else if (_controller.status ==
                             //     AnimationStatus.dismissed) {
-                            //   widget.controller.forward();
+                            //   _controller.forward();
                             // }
                           },
                           child: Container(
-                            height:
-                                (_fabRevealAnimation.value) * (constraints.maxHeight - 64) +
-                                    (1 - _fabRevealAnimation.value) * 64,
-                            width: (_fabRevealAnimation.value) * constraints.maxWidth +
+                            height: (_fabRevealAnimation.value) *
+                                    (constraints.maxHeight - 64) +
                                 (1 - _fabRevealAnimation.value) * 64,
-                            margin:
-                                EdgeInsets.all((1 - _fabRevealAnimation.value) * 24),
+                            width: (_fabRevealAnimation.value) *
+                                    constraints.maxWidth +
+                                (1 - _fabRevealAnimation.value) * 64,
+                            margin: EdgeInsets.all(
+                                (1 - _fabRevealAnimation.value) * 24),
                             padding: const EdgeInsets.all(8),
                             child: Center(
                               child: SizedBox(),
@@ -180,7 +192,8 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                             decoration: BoxDecoration(
                               color: Theme.of(context).primaryColorDark,
                               borderRadius: BorderRadius.all(
-                                Radius.circular((1 - _fabRevealAnimation.value) * 500),
+                                Radius.circular(
+                                    (1 - _fabRevealAnimation.value) * 500),
                               ),
                               boxShadow: [
                                 BoxShadow(
@@ -225,19 +238,22 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                       /// Action Icons
                       Positioned(
                         bottom: (1 - _fabIconFallAnimation.value) *
-                            (_yAxisPositionAnimation.value *
-                                (constraints.maxHeight / 2 - 70)) + 16 + (1 - _fabIconFallAnimation.value) * 24,
+                                (_yAxisPositionAnimation.value *
+                                    (constraints.maxHeight / 2 - 70)) +
+                            16 +
+                            (1 - _fabIconFallAnimation.value) * 24,
                         right: (_xAxisPositionAnimation.value *
                                 (MediaQuery.of(context).size.width / 2 - 56)) -
                             (_actionIconTranslateAnimation.value *
                                 constraints.maxWidth /
-                                4) + 40,
+                                4) +
+                            40,
                         child: GestureDetector(
                           onTap: () {
-                            // if (widget.controller.status == AnimationStatus.completed) {
-                            //   widget.controller.reverse();
+                            // if (_controller.status == AnimationStatus.completed) {
+                            //   _controller.reverse();
                             // } else {
-                            //   widget.controller.forward();
+                            //   _controller.forward();
                             // }
                           },
                           child: IgnorePointer(
@@ -253,15 +269,15 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                       ),
                       Positioned(
                         bottom: 16,
-                        left: 16
-                            +
+                        left: 16 +
                             (_actionIconTranslateAnimation.value *
                                 constraints.maxWidth /
-                                4) - 40,
+                                4) -
+                            40,
                         child: GestureDetector(
                           onTap: () {
                             print("close");
-                            widget.controller.reverse();
+                            _controller.reverse();
                           },
                           child: Container(
                             height: 32,
