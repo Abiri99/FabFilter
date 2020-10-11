@@ -1,4 +1,5 @@
 import 'package:fab_filter/change_notifier/filters_change_notifier.dart';
+import 'package:fab_filter/filter_pageview_container.dart';
 import 'package:fab_filter/filter_view.dart';
 import 'package:fab_filter/filter_view2.dart';
 import 'package:flutter/material.dart';
@@ -132,6 +133,7 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                 right: 0,
                 bottom: constraints.maxHeight - 64 - ((1 - _filterSheetAnimation.value) * 64),
                 child: IgnorePointer(
+                  ignoring: false,
                   child: Opacity(
                     opacity: _filterSheetAnimation.value == 0 ? 0.0 : 1.0,
                     child: ChangeNotifierProvider(
@@ -140,7 +142,8 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                         alignment: Alignment.center,
                         color: Color(0xff164A6D),
                         child: FilterPageViewIndicator(
-                          currentPage: 0,
+                          currentPage: 2,
+
                         ),
                       ),
                     ),
@@ -224,32 +227,7 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                       /// PageView
                       IgnorePointer(
                         ignoring: _filterSheetAnimation.value == 1.0 ? false : true,
-                        child: Transform.translate(
-                          offset: Offset(0, 36 * (1 - _filterSheetAnimation.value)),
-                          child: Opacity(
-                            opacity: _filterSheetAnimation.value,
-                            child: ChangeNotifierProvider(
-                              create: (context) => FiltersChangeNotifier(),
-                              child: Consumer<FiltersChangeNotifier>(
-                                builder: (_, filtersChangeNotifier, __) => Container(
-                                  child: PageView.builder(
-                                    physics: BouncingScrollPhysics(),
-                                    itemCount: filtersChangeNotifier.filters.length,
-                                    itemBuilder: (context, position) {
-                                      return filtersChangeNotifier.filters[position]["type"] == 2 ? FilterView2(
-                                        key: ValueKey(filtersChangeNotifier.filters[position]["status"]),
-                                      ) : FilterView(
-                                        filtersChangeNotifier: filtersChangeNotifier,
-                                        position: position,
-                                        key: ValueKey(filtersChangeNotifier.filters[position]["status"]),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                        child: FilterPageViewContainer(_filterSheetAnimation),
                       ),
 
                       /// Action Icons Background Container

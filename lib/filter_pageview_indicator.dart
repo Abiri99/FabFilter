@@ -24,6 +24,13 @@ class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator> {
     super.initState();
   }
 
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   animateToItem(int position) {
     _controller.animateTo(
       (position.toDouble() * 100) - 24,
@@ -38,16 +45,17 @@ class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator> {
     FiltersChangeNotifier filtersChangeNotifier = Provider.of<FiltersChangeNotifier>(context);
 
     return IgnorePointer(
+      ignoring: false,
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        physics: PageScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         itemCount: filtersChangeNotifier.filters.length,
         itemExtent: 100,
         controller: _controller,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, position) {
-
           var diff = (position.toDouble()) - widget.currentPage;
-          diff = diff.clamp(-1.0, 1.0);
+          diff = diff.clamp(-1.0, 1.0).abs();
 
           return Container(
             margin: const EdgeInsets.symmetric(
@@ -56,7 +64,7 @@ class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator> {
             ),
             child: Transform.scale(
               alignment: Alignment.center,
-              scale: 0.8 + (1 - diff) * 0.2,
+              scale: 0.9 + (1 - diff) * 0.1,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -82,7 +90,7 @@ class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator> {
                           child: child,
                         );
                       },
-                      child: Container(
+                      child: filtersChangeNotifier.filters[position]["status"] == FilterStatus.Changed ? Container(
                         width: 16,
                         height: 16,
                         decoration: BoxDecoration(
@@ -92,7 +100,7 @@ class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator> {
                           ),
                           border: Border.all(color: Color(0xff164A6D), width: 3,),
                         ),
-                      ),
+                      ) : SizedBox(),
                     ),
                   ),
                 ],
