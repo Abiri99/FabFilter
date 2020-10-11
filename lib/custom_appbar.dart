@@ -9,10 +9,6 @@ class CustomAppBar extends SliverPersistentHeaderDelegate {
       builder: (context, constraints) {
         final double percent =
             (constraints.maxHeight - minExtent) / (maxExtent - minExtent);
-        print("percent: $percent");
-        print("maxHeight: ${constraints.maxHeight}");
-
-        print("top: ${MediaQuery.of(context).viewPadding.top}");
 
         return Container(
           color: Theme.of(context).primaryColor,

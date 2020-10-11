@@ -45,10 +45,8 @@ class _HomePageState extends State<HomePage>
 
   animationCallback(bool value) {
     if (value) {
-      print("true");
       _controller.forward();
     } else {
-      print("false");
       _controller.reverse();
     }
   }
@@ -81,7 +79,6 @@ class _HomePageState extends State<HomePage>
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, position) {
-                      print("building item $position");
                       if (position == 0)
                         return SizedBox(
                           height: 12,

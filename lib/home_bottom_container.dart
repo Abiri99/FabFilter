@@ -296,7 +296,6 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                             40,
                         child: GestureDetector(
                           onTap: () {
-                            print("close");
                             _controller.reverse();
                           },
                           child: Container(

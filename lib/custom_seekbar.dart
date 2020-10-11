@@ -13,52 +13,78 @@ class CustomSeekBar extends StatefulWidget {
 }
 
 class _CustomSeekBarState extends State<CustomSeekBar> {
-  double _firstVal;
-  double _secVal;
-
-  double _firstThumbGestureStartPosition;
-  double _secThumbGestureStartPosition;
+  //New
+  double firstThumbStartX;
+  double secThumbStartX;
+  int currentNode;
 
   @override
   void initState() {
-    _firstVal = 0;
-    _secVal = widget.width - 48;
-
-    _firstThumbGestureStartPosition = _firstVal;
-    _secThumbGestureStartPosition = _secVal;
+    firstThumbStartX = 0;
+    secThumbStartX = widget.width - 48;
+    currentNode = 0;
     super.initState();
+  }
+
+  _handleDragStart(DragStartDetails dragStartDetails) {
+    currentNode = _detectNode(dragStartDetails);
+  }
+
+  _detectNode(DragStartDetails details) {
+    var position = details.localPosition.dx;
+    if (position >= firstThumbStartX && position <= firstThumbStartX + 48)
+      return 1;
+    else if (position >= secThumbStartX && position <= secThumbStartX + 48)
+      return 2;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 48,
-      margin: const EdgeInsets.symmetric(),
-      color: Colors.brown,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Line(
-            color: Color(0xff297295),
-          ),
-          Positioned(
-            left: _secVal,
-            bottom: 0,
-            top: 0,
-            child: GestureDetector(
-              onHorizontalDragStart: (dragStartDetails) {
-                _secThumbGestureStartPosition = dragStartDetails.localPosition.dx;
-              },
-              onHorizontalDragUpdate: (dragUpdateDetails) {
-                var position = dragUpdateDetails.globalPosition.dx;
-                var diff = position - _secThumbGestureStartPosition;
-                // if (position > widget.width || position <= _firstVal + 48 + 4)
-                //   return
-                setState(() {
-                  _secVal = (_secVal + diff).clamp(_firstVal + 48, widget.width - 48).toDouble();
-                  // _secVal = dragUpdateDetails.localPosition.dx;
-                });
-              },
+    return GestureDetector(
+      onHorizontalDragStart: (dragStartDetails) {
+        _handleDragStart(dragStartDetails);
+      },
+      onHorizontalDragUpdate: (dragUpdateDetails) {
+        var diff = dragUpdateDetails.delta.dx;
+        if (currentNode == 1)
+          setState(() {
+            firstThumbStartX = (firstThumbStartX + diff).clamp(0.0, secThumbStartX - 48);
+          });
+        else if (currentNode == 2)
+          setState(() {
+            secThumbStartX = (secThumbStartX + diff).clamp(firstThumbStartX + 48, widget.width - 48);
+          });
+
+        // _handleDrag(dragUpdateDetails);
+
+
+        // var position = dragUpdateDetails.localPosition.dx;
+        // print("pos: $position");
+        // var diff = dragUpdateDetails.delta.dx;
+        // if (position >= _firstVal - 24 && position <= _firstVal + 24) {
+        //   print("moving first with diff: $diff");
+        //   setState(() {
+        //     _firstVal = (_firstVal + diff).clamp(24, _secVal - 48).toDouble();
+        //   });
+        // } else if (position >= _secVal - 24 && position <= _secVal + 24) {
+        //   print("moving sec with diff: $diff");
+        //   _secVal = (_secVal + diff).clamp(_firstVal + 48, widget.width - 24).toDouble();
+        // }
+      },
+      child: Container(
+        height: 48,
+        margin: const EdgeInsets.symmetric(),
+        color: Colors.white,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Line(
+              color: Color(0xff297295),
+            ),
+            Positioned(
+              left: secThumbStartX,
+              bottom: 0,
+              top: 0,
               child: Container(
                 height: 48,
                 width: 48,
@@ -71,26 +97,10 @@ class _CustomSeekBarState extends State<CustomSeekBar> {
                 ),
               ),
             ),
-          ),
-          Positioned(
-            left: _firstVal,
-            bottom: 0,
-            top: 0,
-            child: GestureDetector(
-              onHorizontalDragStart: (dragStartDetails) {
-                _firstThumbGestureStartPosition = dragStartDetails.localPosition.dx;
-              },
-              onHorizontalDragUpdate: (dragUpdateDetails) {
-                print("pos: ${dragUpdateDetails.localPosition}");
-                var position = dragUpdateDetails.localPosition.dx;
-                var diff = position - _firstThumbGestureStartPosition;
-                // if (position < 0 || position >= _secVal - 48 - 4)
-                //   return
-                setState(() {
-                  // _firstVal = dragUpdateDetails.localPosition.dx;
-                  _firstVal = (_firstVal + diff).clamp(0, _secVal - 48).toDouble();
-                });
-              },
+            Positioned(
+              left: firstThumbStartX,
+              bottom: 0,
+              top: 0,
               child: Container(
                 height: 48,
                 width: 48,
@@ -102,8 +112,8 @@ class _CustomSeekBarState extends State<CustomSeekBar> {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
