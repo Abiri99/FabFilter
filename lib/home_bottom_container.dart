@@ -1,3 +1,5 @@
+import 'package:fab_filter/filter_view.dart';
+import 'package:fab_filter/filter_view2.dart';
 import 'package:flutter/material.dart';
 
 import 'filter_icon.dart';
@@ -126,11 +128,16 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                 top: (1 - _filterSheetAnimation.value) * 64 + 0,
                 left: 0,
                 right: 0,
-                bottom: constraints.maxHeight - 64,
-                child: Container(
-                  color: Color(0xff164A6D),
-                  child: FilterPageViewIndicator(
-                    currentPage: 0,
+                bottom: constraints.maxHeight - 64 - ((1 - _filterSheetAnimation.value) * 64),
+                child: IgnorePointer(
+                  child: Opacity(
+                    opacity: _filterSheetAnimation.value == 0 ? 0.0 : 1.0,
+                    child: Container(
+                      color: Color(0xff164A6D),
+                      child: FilterPageViewIndicator(
+                        currentPage: 0,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -210,11 +217,24 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
 
                       /// PageView
                       IgnorePointer(
-                        ignoring: true,
-                        child: Container(
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [],
+                        ignoring: _filterSheetAnimation.value == 1.0 ? false : true,
+                        child: Transform.translate(
+                          offset: Offset(0, 36 * (1 - _filterSheetAnimation.value)),
+                          child: Opacity(
+                            opacity: _filterSheetAnimation.value,
+                            child: Container(
+                              // color: Colors.grey,
+                              child: PageView.builder(
+                                physics: BouncingScrollPhysics(),
+                                itemCount: 5,
+                                itemBuilder: (context, position) {
+                                  if (position == 2) {
+                                    return FilterView2();
+                                  }
+                                  return FilterView();
+                                },
+                              ),
+                            ),
                           ),
                         ),
                       ),

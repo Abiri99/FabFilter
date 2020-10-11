@@ -16,6 +16,7 @@ class _HomePageState extends State<HomePage>
   AnimationController _controller;
 
   Animation<double> _listViewAnimation;
+  Animation<double> _opacityAnimation;
 
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _HomePageState extends State<HomePage>
         curve: Curves.easeOut,
       ),
     );
+    _opacityAnimation = Tween(begin: 1.0, end: 0.5).animate(_listViewAnimation);
     super.initState();
   }
 
@@ -84,12 +86,18 @@ class _HomePageState extends State<HomePage>
                         return SizedBox(
                           height: 12,
                         );
-                      return Opacity(
+                      return FadeTransition(
                         key: ValueKey(position),
-                        // opacity: _listViewAnimation,
-                        opacity: 1 - _listViewAnimation.value * 0.4,
-                        child: Transform.scale(
-                          scale: 1 - _listViewAnimation.value * 0.1,
+                        opacity: _opacityAnimation,
+                        // opacity: 1 - _listViewAnimation.value * 0.4,
+                        child: ListItem(
+                          key: ValueKey(position),
+                          horizontalMargin: 20 + 12 * _listViewAnimation.value,
+                          verticalPadding: 24 - _listViewAnimation.value * 4,
+                        ),
+                        // child: Transform.scale(
+                        //   scale: 1 - _listViewAnimation.value * 0.1,
+                        //   alignment: Alignment.topCenter,
                           // child: Container(
                           //   width: 100,
                           //   height: 100,
@@ -97,12 +105,8 @@ class _HomePageState extends State<HomePage>
                           //   margin: const EdgeInsets.all(8),
                           // ),
                           // ),
-                          child: ListItem(
-                            key: ValueKey(position),
-                            horizontalMargin: 20,
-                            verticalPadding: 24,
-                          ),
-                        ),
+
+                        // ),
                       );
                     },
                   ),

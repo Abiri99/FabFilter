@@ -29,7 +29,7 @@ class CustomAppBar extends SliverPersistentHeaderDelegate {
                   top: MediaQuery.of(context).viewPadding.top,
                 ),
                 child: Line(
-                  width: 180,
+                  width: 180 - (1 - percent) * 60,
                   height: 12,
                   color: Theme.of(context).primaryColorLight,
                 ),
@@ -61,5 +61,5 @@ class CustomAppBar extends SliverPersistentHeaderDelegate {
   double get maxExtent => 90.0;
 
   @override
-  double get minExtent => 70.0;
+  double get minExtent => 65.0;
 }
