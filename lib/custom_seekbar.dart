@@ -1,6 +1,8 @@
 import 'package:fab_filter/line.dart';
 import 'package:flutter/material.dart';
 
+import 'custom_seekbar_painter.dart';
+
 class CustomSeekBar extends StatefulWidget {
   final double width;
 
@@ -13,13 +15,15 @@ class CustomSeekBar extends StatefulWidget {
 }
 
 class _CustomSeekBarState extends State<CustomSeekBar> {
-  //New
   double firstThumbStartX;
   double secThumbStartX;
   int currentNode;
 
+  bool stateChanged;
+
   @override
   void initState() {
+    stateChanged = false;
     firstThumbStartX = 0;
     secThumbStartX = widget.width - 48;
     currentNode = 0;
@@ -40,81 +44,107 @@ class _CustomSeekBarState extends State<CustomSeekBar> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onHorizontalDragStart: (dragStartDetails) {
-        _handleDragStart(dragStartDetails);
-      },
-      onHorizontalDragUpdate: (dragUpdateDetails) {
-        var diff = dragUpdateDetails.delta.dx;
-        if (currentNode == 1)
-          setState(() {
-            firstThumbStartX = (firstThumbStartX + diff).clamp(0.0, secThumbStartX - 48);
-          });
-        else if (currentNode == 2)
-          setState(() {
-            secThumbStartX = (secThumbStartX + diff).clamp(firstThumbStartX + 48, widget.width - 48);
-          });
-
-        // _handleDrag(dragUpdateDetails);
-
-
-        // var position = dragUpdateDetails.localPosition.dx;
-        // print("pos: $position");
-        // var diff = dragUpdateDetails.delta.dx;
-        // if (position >= _firstVal - 24 && position <= _firstVal + 24) {
-        //   print("moving first with diff: $diff");
-        //   setState(() {
-        //     _firstVal = (_firstVal + diff).clamp(24, _secVal - 48).toDouble();
-        //   });
-        // } else if (position >= _secVal - 24 && position <= _secVal + 24) {
-        //   print("moving sec with diff: $diff");
-        //   _secVal = (_secVal + diff).clamp(_firstVal + 48, widget.width - 24).toDouble();
-        // }
-      },
-      child: Container(
-        height: 48,
-        margin: const EdgeInsets.symmetric(),
-        color: Colors.white,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Line(
-              color: Color(0xff297295),
-            ),
-            Positioned(
-              left: secThumbStartX,
-              bottom: 0,
-              top: 0,
-              child: Container(
-                height: 48,
-                width: 48,
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  // color: Color(0xff297295),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(50),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: firstThumbStartX,
-              bottom: 0,
-              top: 0,
-              child: Container(
-                height: 48,
-                width: 48,
-                decoration: BoxDecoration(
-                  color: Color(0xff297295),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(50),
-                  ),
-                ),
-              ),
-            ),
-          ],
+    return Container(
+      // color: Colors.red,
+      height: 64,
+      margin: const EdgeInsets.symmetric(
+        horizontal: 6,
+        // vertical: 32,
+      ),
+      child: GestureDetector(
+        onHorizontalDragStart: (dragStartDetails) {
+          _handleDragStart(dragStartDetails);
+        },
+        onHorizontalDragUpdate: (dragUpdateDetails) {
+          var diff = dragUpdateDetails.delta.dx;
+          if (currentNode == 1)
+            setState(() {
+              stateChanged = true;
+              firstThumbStartX =
+                  (firstThumbStartX + diff).clamp(0.0, secThumbStartX - 48);
+            });
+          else if (currentNode == 2)
+            setState(() {
+              stateChanged = true;
+              secThumbStartX = (secThumbStartX + diff)
+                  .clamp(firstThumbStartX + 48, widget.width - 48);
+            });
+        },
+        child: CustomPaint(
+          painter: CustomSeekBarPainter(
+            firstThumbX: firstThumbStartX + 24,
+            secThumbX: secThumbStartX + 24,
+            defaultLineColor: Color(0xff1D668F),
+            progressLineColor: stateChanged ? Color(0xff359DBA) : Color(0xff1D668F),
+            thumbColor: stateChanged ? Color(0xff52D1E2) : Color(0xff297295),
+          ),
         ),
       ),
     );
+
+    // return GestureDetector(
+    //   onHorizontalDragStart: (dragStartDetails) {
+    //     _handleDragStart(dragStartDetails);
+    //   },
+    //   onHorizontalDragUpdate: (dragUpdateDetails) {
+    //     var diff = dragUpdateDetails.delta.dx;
+    //     if (currentNode == 1)
+    //       setState(() {
+    //         stateChanged = true;
+    //         firstThumbStartX =
+    //             (firstThumbStartX + diff).clamp(0.0, secThumbStartX - 48);
+    //       });
+    //     else if (currentNode == 2)
+    //       setState(() {
+    //         stateChanged = true;
+    //         secThumbStartX = (secThumbStartX + diff)
+    //             .clamp(firstThumbStartX + 48, widget.width - 48);
+    //       });
+    //   },
+    //   child: Container(
+    //     height: 48,
+    //     margin: const EdgeInsets.symmetric(),
+    //     child: Stack(
+    //       alignment: Alignment.center,
+    //       children: [
+    //         Line(
+    //           color: stateChanged ?  Color(0xff1D668F),
+    //           height: 12,
+    //           // color: Color(0xff297295),
+    //         ),
+    //         Positioned(
+    //           left: secThumbStartX,
+    //           bottom: 0,
+    //           top: 0,
+    //           child: Container(
+    //             height: 48,
+    //             width: 48,
+    //             decoration: BoxDecoration(
+    //               color: Color(0xff297295),
+    //               borderRadius: BorderRadius.all(
+    //                 Radius.circular(50),
+    //               ),
+    //             ),
+    //           ),
+    //         ),
+    //         Positioned(
+    //           left: firstThumbStartX,
+    //           bottom: 0,
+    //           top: 0,
+    //           child: Container(
+    //             height: 48,
+    //             width: 48,
+    //             decoration: BoxDecoration(
+    //               color: Color(0xff297295),
+    //               borderRadius: BorderRadius.all(
+    //                 Radius.circular(50),
+    //               ),
+    //             ),
+    //           ),
+    //         ),
+    //       ],
+    //     ),
+    //   ),
+    // );
   }
 }

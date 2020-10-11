@@ -1,6 +1,8 @@
+import 'package:fab_filter/change_notifier/filters_change_notifier.dart';
 import 'package:fab_filter/filter_view.dart';
 import 'package:fab_filter/filter_view2.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'filter_icon.dart';
 import 'filter_pageview_indicator.dart';
@@ -132,10 +134,14 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                 child: IgnorePointer(
                   child: Opacity(
                     opacity: _filterSheetAnimation.value == 0 ? 0.0 : 1.0,
-                    child: Container(
-                      color: Color(0xff164A6D),
-                      child: FilterPageViewIndicator(
-                        currentPage: 0,
+                    child: ChangeNotifierProvider(
+                      create: (context) => FiltersChangeNotifier(),
+                      child: Container(
+                        alignment: Alignment.center,
+                        color: Color(0xff164A6D),
+                        child: FilterPageViewIndicator(
+                          currentPage: 0,
+                        ),
                       ),
                     ),
                   ),
@@ -222,17 +228,24 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                           offset: Offset(0, 36 * (1 - _filterSheetAnimation.value)),
                           child: Opacity(
                             opacity: _filterSheetAnimation.value,
-                            child: Container(
-                              // color: Colors.grey,
-                              child: PageView.builder(
-                                physics: BouncingScrollPhysics(),
-                                itemCount: 5,
-                                itemBuilder: (context, position) {
-                                  if (position == 2) {
-                                    return FilterView2();
-                                  }
-                                  return FilterView();
-                                },
+                            child: ChangeNotifierProvider(
+                              create: (context) => FiltersChangeNotifier(),
+                              child: Consumer<FiltersChangeNotifier>(
+                                builder: (_, filtersChangeNotifier, __) => Container(
+                                  child: PageView.builder(
+                                    physics: BouncingScrollPhysics(),
+                                    itemCount: filtersChangeNotifier.filters.length,
+                                    itemBuilder: (context, position) {
+                                      return filtersChangeNotifier.filters[position]["type"] == 2 ? FilterView2(
+                                        key: ValueKey(filtersChangeNotifier.filters[position]["status"]),
+                                      ) : FilterView(
+                                        filtersChangeNotifier: filtersChangeNotifier,
+                                        position: position,
+                                        key: ValueKey(filtersChangeNotifier.filters[position]["status"]),
+                                      );
+                                    },
+                                  ),
+                                ),
                               ),
                             ),
                           ),
