@@ -1,5 +1,9 @@
+import 'package:fab_filter/action_icons.dart';
+import 'package:fab_filter/action_icons_container.dart';
 import 'package:fab_filter/change_notifier/filters_change_notifier.dart';
+import 'package:fab_filter/fab_container.dart';
 import 'package:fab_filter/filter_pageview_container.dart';
+import 'package:fab_filter/filter_pageview_indicator_container.dart';
 import 'package:fab_filter/filter_view.dart';
 import 'package:fab_filter/filter_view2.dart';
 import 'package:flutter/material.dart';
@@ -10,10 +14,15 @@ import 'filter_pageview_indicator.dart';
 
 class HomeBottomContainer extends StatefulWidget {
   final Function(bool value) animationCallback;
+  final Duration duration;
 
   HomeBottomContainer({
+    Key key,
     @required this.animationCallback,
-  }) : assert(animationCallback != null);
+    @required this.duration,
+  })  : assert(animationCallback != null),
+        assert(duration != null),
+        super(key: key);
 
   @override
   _HomeBottomContainerState createState() => _HomeBottomContainerState();
@@ -31,11 +40,14 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
   Animation<double> _actionIconTranslateAnimation;
   Animation<double> _filterSheetAnimation;
 
+  bool _launchedParentAnimation;
+
   @override
   void initState() {
+    _launchedParentAnimation = false;
     _controller = AnimationController(
-      duration: Duration(seconds: 2),
-      reverseDuration: Duration(seconds: 2),
+      duration: widget.duration,
+      reverseDuration: widget.duration,
       vsync: this,
     );
     _xAxisPositionAnimation = CurvedAnimation(
@@ -88,11 +100,26 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
     );
 
     _controller.addStatusListener((status) {
-      if (status == AnimationStatus.forward)
-        widget.animationCallback(true);
-      else if (status == AnimationStatus.reverse)
-        widget.animationCallback(false);
+      switch(status) {
+        case AnimationStatus.forward:
+          print("forward");
+          widget.animationCallback(true);
+          break;
+        case AnimationStatus.reverse:
+          print("reverse");
+          widget.animationCallback(false);
+          break;
+      }
     });
+
+    // _controller.addStatusListener((status) {
+    //   if (_launchedParentAnimation) return;
+    //   if (status == AnimationStatus.forward) {
+    //     widget.animationCallback(true);
+    //   } else if (status == AnimationStatus.reverse) {
+    //     widget.animationCallback(false);
+    //   }
+    // });
     // _controller.addStatusListener(_controllerListener);
 
     // _reveal_controller.addStatusListener(revealListener);
@@ -120,6 +147,9 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
 
   @override
   Widget build(BuildContext context) {
+
+    print("Home bottom container build");
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) => LayoutBuilder(
@@ -127,28 +157,9 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
           // color: Colors.red,
           child: Stack(
             children: [
-              Positioned(
-                top: (1 - _filterSheetAnimation.value) * 64 + 0,
-                left: 0,
-                right: 0,
-                bottom: constraints.maxHeight - 64 - ((1 - _filterSheetAnimation.value) * 64),
-                child: IgnorePointer(
-                  ignoring: false,
-                  child: Opacity(
-                    opacity: _filterSheetAnimation.value == 0 ? 0.0 : 1.0,
-                    child: ChangeNotifierProvider(
-                      create: (context) => FiltersChangeNotifier(),
-                      child: Container(
-                        alignment: Alignment.center,
-                        color: Color(0xff164A6D),
-                        child: FilterPageViewIndicator(
-                          currentPage: 2,
-
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+              FilterPageViewIndicatorContainer(
+                filterSheetAnimation: _filterSheetAnimation,
+                constraints: constraints,
               ),
               Positioned(
                 top: 64,
@@ -162,121 +173,32 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
                     fit: StackFit.expand,
                     children: [
                       /// Fab background
-                      Positioned(
-                        // top: (1 - _fabRevealAnimation.value) * (320 - (_yAxisPositionAnimation.value * (180 - 70)
-                        // as double)),
-                        // left: (1 - _fabRevealAnimation.value) * (MediaQuery.of(context).size.width - (_xAxisPositionAnimation.value *
-                        //     (MediaQuery.of(context).size.width / 2 - 56)
-                        //     as double)),
-                        bottom: (1 - _fabRevealAnimation.value) *
-                            (_yAxisPositionAnimation.value *
-                                (constraints.maxHeight / 2 - 70)),
-                        right: (1 - _fabRevealAnimation.value) *
-                            (_xAxisPositionAnimation.value *
-                                (MediaQuery.of(context).size.width / 2 - 56)),
-
-                        // bottom: (_yAxisPositionAnimation.value *
-                        //     (constraints.maxHeight / 2 - 70)),
-                        // right:  (_xAxisPositionAnimation.value *
-                        //     (MediaQuery.of(context).size.width / 2 - 56)),
-                        child: GestureDetector(
-                          onTap: () {
-                            if (_controller.status == AnimationStatus.completed)
-                              _controller.reverse();
-                            else
-                              _controller.forward();
-                            // if (_reveal_controller.status == AnimationStatus.completed) {
-                            //   _reveal_controller.reverse();
-                            // } else if (_controller.status ==
-                            //     AnimationStatus.dismissed) {
-                            //   _controller.forward();
-                            // }
-                          },
-                          child: Container(
-                            height: (_fabRevealAnimation.value) *
-                                    (constraints.maxHeight - 64) +
-                                (1 - _fabRevealAnimation.value) * 64,
-                            width: (_fabRevealAnimation.value) *
-                                    constraints.maxWidth +
-                                (1 - _fabRevealAnimation.value) * 64,
-                            margin: EdgeInsets.all(
-                                (1 - _fabRevealAnimation.value) * 24),
-                            padding: const EdgeInsets.all(8),
-                            child: Center(
-                              child: SizedBox(),
-                            ),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColorDark,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(
-                                    (1 - _fabRevealAnimation.value) * 500),
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  offset: Offset(0, 15),
-                                  blurRadius: 15,
-                                  spreadRadius: -8,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                      FabContainer(
+                        controller: _controller,
+                        fabRevealAnimation: _fabRevealAnimation,
+                        xAxisPositionAnimation: _xAxisPositionAnimation,
+                        yAxisPositionAnimation: _yAxisPositionAnimation,
+                        constraints: constraints,
                       ),
 
                       /// PageView
                       IgnorePointer(
-                        ignoring: _filterSheetAnimation.value == 1.0 ? false : true,
+                        ignoring:
+                            _filterSheetAnimation.value == 1.0 ? false : true,
                         child: FilterPageViewContainer(_filterSheetAnimation),
                       ),
 
                       /// Action Icons Background Container
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        left: 0,
-                        child: IgnorePointer(
-                          child: Opacity(
-                            opacity: 1.0 * _filterSheetAnimation.value,
-                            child: Container(
-                              height: 64,
-                              color: Color(0xff33779C),
-                            ),
-                          ),
-                        ),
-                      ),
+                      ActionIconsContainer(_filterSheetAnimation),
 
                       /// Action Icons
-                      Positioned(
-                        bottom: (1 - _fabIconFallAnimation.value) *
-                                (_yAxisPositionAnimation.value *
-                                    (constraints.maxHeight / 2 - 70)) +
-                            16 +
-                            (1 - _fabIconFallAnimation.value) * 24,
-                        right: (_xAxisPositionAnimation.value *
-                                (MediaQuery.of(context).size.width / 2 - 56)) -
-                            (_actionIconTranslateAnimation.value *
-                                constraints.maxWidth /
-                                4) +
-                            40,
-                        child: GestureDetector(
-                          onTap: () {
-                            // if (_controller.status == AnimationStatus.completed) {
-                            //   _controller.reverse();
-                            // } else {
-                            //   _controller.forward();
-                            // }
-                          },
-                          child: IgnorePointer(
-                            child: Container(
-                              // color: Colors.red,
-                              height: 32,
-                              width: 32,
-                              // margin: const EdgeInsets.all(24),
-                              child: FilterIcon(),
-                            ),
-                          ),
-                        ),
+                      ActionIcons(
+                        fabIconFallAnimation: _fabIconFallAnimation,
+                        xAxisPositionAnimation: _xAxisPositionAnimation,
+                        yAxisPositionAnimation: _yAxisPositionAnimation,
+                        actionIconTranslateAnimation:
+                            _actionIconTranslateAnimation,
+                        constraints: constraints,
                       ),
                       Positioned(
                         bottom: 16,

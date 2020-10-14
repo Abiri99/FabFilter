@@ -28,20 +28,17 @@ class _LineState extends State<Line> {
 
   @override
   void initState() {
-    print("line initstate");
     _tapped = false;
     super.initState();
   }
 
   @override
   void didChangeDependencies() {
-    print("line didchangedependencies");
     super.didChangeDependencies();
   }
 
   @override
   void didUpdateWidget(Line oldWidget) {
-    print("line didupdatewidget");
     super.didUpdateWidget(oldWidget);
   }
 

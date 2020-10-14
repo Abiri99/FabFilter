@@ -36,10 +36,13 @@ class CustomAppBar extends SliverPersistentHeaderDelegate {
                 bottom: 0,
                 top: (-200 * (1 - percent)/2) + MediaQuery.of(context).viewPadding.top,
                 child: Container(
-                  child: Icon(
-                    Icons.menu,
+                  child: IconButton(
+                    icon: Icon(Icons.menu),
                     color: Theme.of(context).primaryColorLight,
-                    size: 32,
+                    iconSize: 32,
+                    onPressed: () {
+                      Scaffold.of(context).openDrawer();
+                    },
                   ),
                 ),
               ),

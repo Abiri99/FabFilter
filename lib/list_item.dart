@@ -59,6 +59,7 @@ class _ListItemState extends State<ListItem>
         }
       },
       child: AnimatedBuilder(
+        key: ValueKey(_controller.value),
         animation: _expansionAnimation,
         builder: (context, child) => Container(
           margin: EdgeInsets.symmetric(
