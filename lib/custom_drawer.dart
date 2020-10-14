@@ -29,7 +29,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
       child: Slider(
         value: animationChangeNotifier.sliderValue ?? 1400.0,
         min: 100.0,
-        max: 1400.0,
+        max: 8000.0,
         onChanged: (value) {
           animationChangeNotifier.setSliderValue(value);
         },

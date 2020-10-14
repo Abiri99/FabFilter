@@ -25,6 +25,7 @@ class _HomePageState extends State<HomePage>
 
   Animation<double> _listViewAnimation;
   Animation<double> _opacityAnimation;
+  Animation<double> _scaleAnimation;
 
   @override
   void initState() {
@@ -42,6 +43,7 @@ class _HomePageState extends State<HomePage>
       ),
     );
     _opacityAnimation = Tween(begin: 1.0, end: 0.5).animate(_listViewAnimation);
+    _scaleAnimation = Tween(begin: 1.0, end: 0.9).animate(_listViewAnimation);
     super.initState();
   }
 
@@ -93,32 +95,53 @@ class _HomePageState extends State<HomePage>
                   delegate: CustomAppBar(),
                   pinned: true,
                 ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, position) {
-                      if (position == 0)
-                        return SizedBox(
-                          key: ValueKey(0),
-                          height: 12,
-                        );
-                      return FadeTransition(
-                        opacity: _opacityAnimation,
-                        child: Container(
-                          // height: 86,
-                          color: Colors.white,
-                          margin: EdgeInsets.symmetric(horizontal: _listViewAnimation.value * 12 + 20, vertical: 8,),
-                          padding: EdgeInsets.symmetric(vertical: 24 - _listViewAnimation.value * 4),
-                          child: Text(""),
-                        ),
-                      );
-                      // return ListItem(
-                      //   key: ValueKey(position),
-                      //   horizontalMargin: _listViewAnimation.value * 12 + 20,
-                      //   verticalPadding: 24 - _listViewAnimation.value * 4,
-                      // );
-                    },
+                SliverFadeTransition(
+                  opacity: _opacityAnimation,
+                  sliver: SliverFillRemaining(
+                    child: ListView(
+                      cacheExtent: 500,
+                      children: List.generate(10, (index) => ListItem(
+                        key: ValueKey(index),
+                        verticalPadding: _listViewAnimation.value * -4 + 24,
+                        horizontalMargin: _listViewAnimation.value * 24,
+                        // horizontalMargin: _listViewAnimation.value * 12 + 20,
+                        // ver
+                      ),),
+                    ),
                   ),
                 ),
+
+
+
+
+
+
+                // SliverList(
+                //   delegate: SliverChildBuilderDelegate(
+                //     (context, position) {
+                //       if (position == 0)
+                //         return SizedBox(
+                //           key: ValueKey(0),
+                //           height: 12,
+                //         );
+                //       return FadeTransition(
+                //         opacity: _opacityAnimation,
+                //         child: Container(
+                //           // height: 86,
+                //           color: Colors.white,
+                //           margin: EdgeInsets.symmetric(horizontal: _listViewAnimation.value * 12 + 20, vertical: 8,),
+                //           padding: EdgeInsets.symmetric(vertical: 24 - _listViewAnimation.value * 4),
+                //           child: Text(""),
+                //         ),
+                //       );
+                //       // return ListItem(
+                //       //   key: ValueKey(position),
+                //       //   horizontalMargin: _listViewAnimation.value * 12 + 20,
+                //       //   verticalPadding: 24 - _listViewAnimation.value * 4,
+                //       // );
+                //     },
+                //   ),
+                // ),
               ],
             ),
             // AnimatedBuilder(

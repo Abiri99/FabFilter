@@ -15,7 +15,7 @@ class ListItem extends StatefulWidget {
   ListItem({
     Key key,
     this.horizontalMargin = 16,
-    this.verticalPadding = 16,
+    this.verticalPadding = 24,
   }) : super(key: key);
 
   @override
@@ -59,55 +59,32 @@ class _ListItemState extends State<ListItem>
         }
       },
       child: AnimatedBuilder(
-        key: ValueKey(_controller.value),
         animation: _expansionAnimation,
-        builder: (context, child) => Container(
-          margin: EdgeInsets.symmetric(
-            horizontal: widget.horizontalMargin - _expansionAnimation.value * 8,
-            vertical: 10,
-          ),
-          padding: EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: widget.verticalPadding,
-          ),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.all(
-              Radius.circular(6),
-            ),
-          ),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Transform.rotate(
-                    angle: _expansionAnimation.value * (pi / 2),
-                    child: Icon(
-                      Icons.arrow_forward_ios,
-                      color: Theme.of(context).primaryColorLight,
-                      size: 16,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 12,
-                  ),
-                  const ListItemMainContent(),
-                ],
+        builder: (context, child) => Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width * 0.9 - widget.horizontalMargin + (_controller.value * MediaQuery.of(context).size.width * 0.05),
+              margin: EdgeInsets.symmetric(
+                // horizontal: widget.horizontalMargin - _expansionAnimation.value * 8,
+                vertical: 10,
               ),
-              // Align(
-              //   alignment: Alignment.bottomCenter,
-              //   heightFactor: _controller.value,
-              //   child: SizedBox(height: 8,),
-              // ),
-              ClipRect(
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  heightFactor: _controller.value,
-                  child: const ListItemTable(),
+              padding: EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: widget.verticalPadding,
+              ),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(6),
                 ),
               ),
-            ],
-          ),
+              child: ListItemMainContent(
+                controller: _controller,
+                expansionAnimation: _expansionAnimation,
+              ),
+            ),
+          ],
         ),
       ),
     );

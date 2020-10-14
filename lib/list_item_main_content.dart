@@ -1,65 +1,161 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import 'line.dart';
 
 class ListItemMainContent extends StatelessWidget {
+  final AnimationController controller;
+  final Animation<double> expansionAnimation;
 
-  const ListItemMainContent();
+  const ListItemMainContent({
+    this.controller,
+    this.expansionAnimation,
+  })  : assert(controller != null),
+        assert(expansionAnimation != null);
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        children: [
-          Row(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IgnorePointer(
+          child: Row(
             children: [
-              Expanded(
-                flex: 4,
-                child: Line(
+              Transform.rotate(
+                angle: expansionAnimation.value * (pi / 2),
+                child: Icon(
+                  Icons.arrow_forward_ios,
                   color: Theme.of(context).primaryColorLight,
-                  height: 10,
+                  size: 16,
                 ),
               ),
+              const SizedBox(
+                width: 12,
+              ),
               Expanded(
-                flex: 1,
-                child: Container(),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 4,
+                          child: Line(
+                            color: Theme.of(context).primaryColorLight,
+                            height: 10,
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Container(),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Line(
+                            color: Theme.of(context)
+                                .primaryColorLight
+                                .withOpacity(0.5),
+                            height: 10,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 16,
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Line(
+                            color: Theme.of(context)
+                                .primaryColorLight
+                                .withOpacity(0.5),
+                            height: 10,
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: SizedBox(),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
-          SizedBox(
-            height: 8,
+        ),
+        // Align(
+        //   alignment: Alignment.bottomCenter,
+        //   heightFactor: _controller.value,
+        //   child: SizedBox(height: 8,),
+        // ),
+        ClipRect(
+          child: Align(
+            alignment: Alignment.topCenter,
+            heightFactor: controller.value,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 4,
+                        child: Line(
+                          color: Theme.of(context).primaryColorLight,
+                          height: 10,
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Container(),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Line(
+                          color: Theme.of(context)
+                              .primaryColorLight
+                              .withOpacity(0.5),
+                          height: 10,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 16,
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Line(
+                          color: Theme.of(context)
+                              .primaryColorLight
+                              .withOpacity(0.5),
+                          height: 10,
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: SizedBox(),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
-          Row(
-            children: [
-              Expanded(
-                flex: 3,
-                child: Line(
-                  color: Theme.of(context)
-                      .primaryColorLight
-                      .withOpacity(0.5),
-                  height: 10,
-                ),
-              ),
-              SizedBox(
-                width: 16,
-              ),
-              Expanded(
-                flex: 2,
-                child: Line(
-                  color: Theme.of(context)
-                      .primaryColorLight
-                      .withOpacity(0.5),
-                  height: 10,
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: SizedBox(),
-              )
-            ],
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
