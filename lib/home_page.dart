@@ -95,19 +95,18 @@ class _HomePageState extends State<HomePage>
                   delegate: CustomAppBar(),
                   pinned: true,
                 ),
-                SliverFadeTransition(
-                  opacity: _opacityAnimation,
-                  sliver: SliverFillRemaining(
-                    child: ListView(
-                      cacheExtent: 500,
-                      children: List.generate(10, (index) => ListItem(
-                        key: ValueKey(index),
-                        verticalPadding: _listViewAnimation.value * -4 + 24,
-                        horizontalMargin: _listViewAnimation.value * 24,
-                        // horizontalMargin: _listViewAnimation.value * 12 + 20,
-                        // ver
-                      ),),
-                    ),
+                SliverFillRemaining(
+                  child: ListView(
+                    cacheExtent: 500,
+                    children: List.generate(10, (index) => ListItem(
+                      key: ValueKey(index),
+                      verticalPadding:
+                      // _listViewAnimation.value * -4 +
+                          24,
+                      // horizontalMargin: _listViewAnimation.value * 24,
+                      // horizontalMargin: _listViewAnimation.value * 12 + 20,
+                      // ver
+                    ),),
                   ),
                 ),
 
