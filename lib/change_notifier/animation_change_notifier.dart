@@ -4,7 +4,7 @@ class AnimationChangeNotifier with ChangeNotifier {
   Duration duration;
   double sliderValue;
 
-  AnimationChangeNotifier(): duration = Duration(milliseconds: 8000), sliderValue = 8000.0;
+  AnimationChangeNotifier(): duration = Duration(milliseconds: 2000), sliderValue = 2000.0;
 
   setDuration(int duration) {
     this.duration = Duration(milliseconds: duration);

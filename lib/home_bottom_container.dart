@@ -103,11 +103,11 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
       switch(status) {
         case AnimationStatus.forward:
           print("forward");
-          widget.animationCallback(true);
+          // widget.animationCallback(true);
           break;
         case AnimationStatus.reverse:
           print("reverse");
-          widget.animationCallback(false);
+          // widget.animationCallback(false);
           break;
       }
     });
