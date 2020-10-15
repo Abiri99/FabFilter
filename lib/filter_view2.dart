@@ -1,4 +1,4 @@
-import 'package:fab_filter/custom_seekbar.dart';
+import 'package:fab_filter/slider/custom_range_slider.dart';
 import 'package:fab_filter/line.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +28,7 @@ class FilterView2 extends StatelessWidget {
             ),
             SizedBox(height: 8,),
             LayoutBuilder(
-              builder: (context, constraints) => CustomSeekBar(
+              builder: (context, constraints) => CustomRangeSlider(
                 width: constraints.maxWidth,
               ),
             ),
@@ -49,7 +49,7 @@ class FilterView2 extends StatelessWidget {
               height: 8,
             ),
             LayoutBuilder(
-              builder: (context, constraints) => CustomSeekBar(
+              builder: (context, constraints) => CustomRangeSlider(
                 width: constraints.maxWidth,
               ),
             ),

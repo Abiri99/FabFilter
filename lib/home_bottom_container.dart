@@ -1,16 +1,9 @@
 import 'package:fab_filter/action_icons.dart';
 import 'package:fab_filter/action_icons_container.dart';
-import 'package:fab_filter/change_notifier/filters_change_notifier.dart';
 import 'package:fab_filter/fab_container.dart';
 import 'package:fab_filter/filter_pageview_container.dart';
 import 'package:fab_filter/filter_pageview_indicator_container.dart';
-import 'package:fab_filter/filter_view.dart';
-import 'package:fab_filter/filter_view2.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'filter_icon.dart';
-import 'filter_pageview_indicator.dart';
 
 class HomeBottomContainer extends StatefulWidget {
   final Function(bool value) animationCallback;
@@ -40,11 +33,8 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
   Animation<double> _actionIconTranslateAnimation;
   Animation<double> _filterSheetAnimation;
 
-  bool _launchedParentAnimation;
-
   @override
   void initState() {
-    _launchedParentAnimation = false;
     _controller = AnimationController(
       duration: widget.duration,
       reverseDuration: widget.duration,
@@ -102,11 +92,9 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
     _controller.addStatusListener((status) {
       switch(status) {
         case AnimationStatus.forward:
-          print("forward");
           // widget.animationCallback(true);
           break;
         case AnimationStatus.reverse:
-          print("reverse");
           // widget.animationCallback(false);
           break;
       }
@@ -147,8 +135,6 @@ class _HomeBottomContainerState extends State<HomeBottomContainer>
 
   @override
   Widget build(BuildContext context) {
-
-    print("Home bottom container build");
 
     return AnimatedBuilder(
       animation: _controller,

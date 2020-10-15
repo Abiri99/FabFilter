@@ -9,7 +9,6 @@ import 'custom_drawer.dart';
 import 'fab_container.dart';
 import 'filter_pageview_container.dart';
 import 'filter_pageview_indicator_container.dart';
-import 'home_bottom_container.dart';
 import 'list_item.dart';
 
 class HomePage extends StatefulWidget {
@@ -158,21 +157,16 @@ class _HomePageState extends State<HomePage>
                             )
                           : FadeTransition(
                               opacity: _opacityAnimation,
-                              child: Container(
-                                // color: Colors.white,
-                                // padding: EdgeInsets.symmetric(
-                                // vertical: _listViewAnimation.value * -4 + 24,
-                                // ),
-                                margin: EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
-                                  // horizontal: _listViewAnimation.value * 18 + 12,
-                                  // vertical: _listViewAnimation.value * -4 + 8,
-                                ),
-                                // child: ListItem(),
-                                child: ScaleTransition(
-                                  alignment: Alignment.topCenter,
-                                  scale: _scaleAnimation,
+                              child: ScaleTransition(
+                                alignment: Alignment.topCenter,
+                                scale: _scaleAnimation,
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: (1 - _scaleAnimation.value) * -40 + 8,
+                                    // horizontal: _listViewAnimation.value * 18 + 12,
+                                    // vertical: _listViewAnimation.value * -4 + 8,
+                                  ),
                                   child: child,
                                 ),
                               ),

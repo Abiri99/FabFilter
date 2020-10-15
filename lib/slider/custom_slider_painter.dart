@@ -1,20 +1,17 @@
 import 'package:flutter/cupertino.dart';
 
-class CustomSeekBarPainter extends CustomPainter {
-  final double firstThumbX;
-  final double secThumbX;
+class CustomSliderPainter extends CustomPainter {
+  final double thumbX;
   final Color defaultLineColor;
   final Color progressLineColor;
   final Color thumbColor;
 
-  CustomSeekBarPainter({
-    this.firstThumbX,
-    this.secThumbX,
+  CustomSliderPainter({
+    this.thumbX,
     this.defaultLineColor,
     this.progressLineColor,
     this.thumbColor,
-  })  : assert(firstThumbX != null),
-        assert(secThumbX != null),
+  })  : assert(thumbX != null),
         assert(defaultLineColor != null),
         assert(progressLineColor != null),
         assert(thumbColor != null);
@@ -27,12 +24,7 @@ class CustomSeekBarPainter extends CustomPainter {
       ..strokeWidth = 12
       ..color = defaultLineColor;
     canvas.drawLine(
-      Offset(0, size.height / 2),
-      Offset(firstThumbX, size.height / 2),
-      paint,
-    );
-    canvas.drawLine(
-      Offset(secThumbX, size.height / 2),
+      Offset(thumbX, size.height / 2),
       Offset(size.width, size.height / 2),
       paint,
     );
@@ -43,17 +35,15 @@ class CustomSeekBarPainter extends CustomPainter {
       ..strokeWidth = 12
       ..color = progressLineColor;
     canvas.drawLine(
-      Offset(firstThumbX, size.height / 2),
-      Offset(secThumbX, size.height / 2),
+      Offset(0, size.height / 2),
+      Offset(thumbX, size.height / 2),
       paint,
     );
 
     paint = Paint()
       ..style = PaintingStyle.fill
       ..color = thumbColor;
-    canvas.drawCircle(Offset(firstThumbX, size.height/2), 24, paint);
-    canvas.drawCircle(Offset(secThumbX, size.height/2), 24, paint);
-
+    canvas.drawCircle(Offset(thumbX, size.height/2), 24, paint);
     paint = null;
   }
 

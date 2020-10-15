@@ -32,7 +32,6 @@ class _ListItemState extends State<ListItem>
 
   @override
   void initState() {
-    print("list item initState");
     _controller = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 400),
@@ -54,18 +53,6 @@ class _ListItemState extends State<ListItem>
   }
 
   @override
-  void didChangeDependencies() {
-    print("list item didChangeDependencies");
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(ListItem oldWidget) {
-    print("list item didUpdateWidget");
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -73,31 +60,33 @@ class _ListItemState extends State<ListItem>
 
   @override
   Widget build(BuildContext context) {
-    print("listItemBuild");
     var mq = MediaQuery.of(context).size;
 
     // return Text("hi");
 
-    return GestureDetector(
-      onTap: () {
-        if (_controller.status == AnimationStatus.completed) {
-          _controller.reverse();
-        } else {
-          _controller.forward();
-        }
-      },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Container(
-              child: AnimatedBuilder(
-                animation: _expansionAnimation,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IgnorePointer(
-                      child: Row(
+    return Container(
+      alignment: Alignment.topCenter,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          if (_controller.status == AnimationStatus.completed) {
+            _controller.reverse();
+          } else {
+            _controller.forward();
+          }
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Container(
+                child: AnimatedBuilder(
+                  animation: _expansionAnimation,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
                         children: [
                           Container(
                             child: RotationTransition(
@@ -115,55 +104,55 @@ class _ListItemState extends State<ListItem>
                           ListItemLines(),
                         ],
                       ),
-                    ),
-                    // Align(
-                    //   alignment: Alignment.bottomCenter,
-                    //   heightFactor: _controller.value,
-                    //   child: SizedBox(height: 8,),
-                    // ),
-                    ClipRect(
-                      key: ValueKey(_expansionAnimation.value),
-                      child: AnimatedBuilder(
-                        animation: _expansionAnimation,
-                        builder: (context, child) => Align(
-                          alignment: Alignment.topCenter,
-                          heightFactor: _expansionAnimation.value,
-                          child: const ListItemTable(),
+                      // Align(
+                      //   alignment: Alignment.bottomCenter,
+                      //   heightFactor: _controller.value,
+                      //   child: SizedBox(height: 8,),
+                      // ),
+                      ClipRect(
+                        key: ValueKey(_expansionAnimation.value),
+                        child: AnimatedBuilder(
+                          animation: _expansionAnimation,
+                          builder: (context, child) => Align(
+                            alignment: Alignment.topCenter,
+                            heightFactor: _expansionAnimation.value,
+                            child: const ListItemTable(),
+                          ),
                         ),
                       ),
+                    ],
+                  ),
+                  builder: (context, child) => Container(
+                    width: double.infinity,
+                    // width: mq.width * 0.9,
+                    // -
+                    //  +
+                    // (_expansionAnimation.value *
+                    //     mq.width *
+                    //     0.05),
+                    margin: EdgeInsets.symmetric(
+                      horizontal: _expansionAnimation.value * -12 + 12,
+                      // vertical: 10,
                     ),
-                  ],
-                ),
-                builder: (context, child) => Container(
-                  width: double.infinity,
-                  // width: mq.width * 0.9,
-                  // -
-                  //  +
-                  // (_expansionAnimation.value *
-                  //     mq.width *
-                  //     0.05),
-                  margin: EdgeInsets.symmetric(
-                    horizontal: _expansionAnimation.value * -12 + 12,
-                    // vertical: 10,
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 24,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 24,
                     ),
-                  ),
-                  child: Container(
-                    child: child,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(6),
+                      ),
+                    ),
+                    child: Container(
+                      child: child,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

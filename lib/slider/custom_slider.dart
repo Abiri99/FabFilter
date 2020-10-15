@@ -1,22 +1,33 @@
 import 'package:fab_filter/line.dart';
 import 'package:flutter/material.dart';
 
-import 'custom_seekbar_painter.dart';
+import 'custom_range_slider_painter.dart';
+import 'custom_slider_painter.dart';
 
-class CustomSeekBar extends StatefulWidget {
+class CustomSlider extends StatefulWidget {
   final double width;
+  final double maxValue;
+  final double minValue;
+  final double initialValue;
+  final Function(int value) onValueChange;
 
-  CustomSeekBar({
+  CustomSlider({
     @required this.width,
-  }) : assert(width != null);
+    this.maxValue = 1.0,
+    this.minValue = 0.0,
+    this.initialValue,
+    @required this.onValueChange,
+  })  : assert(width != null),
+        assert(maxValue != null),
+        assert(onValueChange != null),
+        assert(minValue != null);
 
   @override
-  _CustomSeekBarState createState() => _CustomSeekBarState();
+  _CustomSliderState createState() => _CustomSliderState();
 }
 
-class _CustomSeekBarState extends State<CustomSeekBar> {
-  double firstThumbStartX;
-  double secThumbStartX;
+class _CustomSliderState extends State<CustomSlider> {
+  double thumbStartX;
   int currentNode;
 
   bool stateChanged;
@@ -24,8 +35,7 @@ class _CustomSeekBarState extends State<CustomSeekBar> {
   @override
   void initState() {
     stateChanged = false;
-    firstThumbStartX = 0;
-    secThumbStartX = widget.width - 48;
+    thumbStartX = widget.initialValue.clamp(widget.minValue, widget.maxValue) ?? widget.width / 2;
     currentNode = 0;
     super.initState();
   }
@@ -36,10 +46,8 @@ class _CustomSeekBarState extends State<CustomSeekBar> {
 
   _detectNode(DragStartDetails details) {
     var position = details.localPosition.dx;
-    if (position >= firstThumbStartX && position <= firstThumbStartX + 48)
-      return 1;
-    else if (position >= secThumbStartX && position <= secThumbStartX + 48)
-      return 2;
+    if (position >= thumbStartX && position <= thumbStartX + 48) return 1;
+    return -1;
   }
 
   @override
@@ -47,8 +55,9 @@ class _CustomSeekBarState extends State<CustomSeekBar> {
     return Container(
       // color: Colors.red,
       height: 64,
+      width: widget.width,
       margin: const EdgeInsets.symmetric(
-        horizontal: 6,
+        // horizontal: 6,
         // vertical: 32,
       ),
       child: GestureDetector(
@@ -60,22 +69,21 @@ class _CustomSeekBarState extends State<CustomSeekBar> {
           if (currentNode == 1)
             setState(() {
               stateChanged = true;
-              firstThumbStartX =
-                  (firstThumbStartX + diff).clamp(0.0, secThumbStartX - 48);
-            });
-          else if (currentNode == 2)
-            setState(() {
-              stateChanged = true;
-              secThumbStartX = (secThumbStartX + diff)
-                  .clamp(firstThumbStartX + 48, widget.width - 48);
+              thumbStartX = (thumbStartX + diff).clamp(0.0, widget.width - 48);
             });
         },
+        onHorizontalDragEnd: (dragEndDetails) {
+          var value = ((thumbStartX + 24) * (widget.maxValue - widget.minValue) / (widget.width));
+          print("value: $value");
+          widget.onValueChange(value.floor());
+        },
         child: CustomPaint(
-          painter: CustomSeekBarPainter(
-            firstThumbX: firstThumbStartX + 24,
-            secThumbX: secThumbStartX + 24,
+          size: Size(widget.width, 64),
+          painter: CustomSliderPainter(
+            thumbX: thumbStartX + 24,
             defaultLineColor: Color(0xff1D668F),
-            progressLineColor: stateChanged ? Color(0xff359DBA) : Color(0xff1D668F),
+            progressLineColor:
+                stateChanged ? Color(0xff359DBA) : Color(0xff1D668F),
             thumbColor: stateChanged ? Color(0xff52D1E2) : Color(0xff297295),
           ),
         ),
@@ -91,14 +99,14 @@ class _CustomSeekBarState extends State<CustomSeekBar> {
     //     if (currentNode == 1)
     //       setState(() {
     //         stateChanged = true;
-    //         firstThumbStartX =
-    //             (firstThumbStartX + diff).clamp(0.0, secThumbStartX - 48);
+    //         thumbStartX =
+    //             (thumbStartX + diff).clamp(0.0, secThumbStartX - 48);
     //       });
     //     else if (currentNode == 2)
     //       setState(() {
     //         stateChanged = true;
     //         secThumbStartX = (secThumbStartX + diff)
-    //             .clamp(firstThumbStartX + 48, widget.width - 48);
+    //             .clamp(thumbStartX + 48, widget.width - 48);
     //       });
     //   },
     //   child: Container(
@@ -128,7 +136,7 @@ class _CustomSeekBarState extends State<CustomSeekBar> {
     //           ),
     //         ),
     //         Positioned(
-    //           left: firstThumbStartX,
+    //           left: thumbStartX,
     //           bottom: 0,
     //           top: 0,
     //           child: Container(
