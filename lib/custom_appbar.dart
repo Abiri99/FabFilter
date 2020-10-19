@@ -24,10 +24,13 @@ class CustomAppBar extends SliverPersistentHeaderDelegate {
                 padding: EdgeInsets.only(
                   top: MediaQuery.of(context).viewPadding.top,
                 ),
-                child: Line(
-                  width: 180 - (1 - percent) * 60,
-                  height: 12,
-                  color: Theme.of(context).primaryColorLight,
+                child: Transform.scale(
+                  scale: ((percent * 1.0) + 0.8),
+                  child: Line(
+                    width: 80,
+                    height: 10,
+                    color: Theme.of(context).primaryColorLight,
+                  ),
                 ),
               ),
               Positioned(
@@ -35,14 +38,17 @@ class CustomAppBar extends SliverPersistentHeaderDelegate {
                 // top: MediaQuery.of(context).viewPadding.top,
                 bottom: 0,
                 top: (-200 * (1 - percent)/2) + MediaQuery.of(context).viewPadding.top,
-                child: Container(
-                  child: IconButton(
-                    icon: Icon(Icons.menu),
-                    color: Theme.of(context).primaryColorLight,
-                    iconSize: 32,
-                    onPressed: () {
-                      Scaffold.of(context).openDrawer();
-                    },
+                child: Transform.scale(
+                  scale: 1.0 - (1 - percent) * 0.8,
+                  child: Container(
+                    child: IconButton(
+                      icon: Icon(Icons.menu),
+                      color: Theme.of(context).primaryColorLight,
+                      iconSize: 34,
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                    ),
                   ),
                 ),
               ),

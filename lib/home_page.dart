@@ -1,14 +1,13 @@
 import 'package:fab_filter/custom_appbar.dart';
-import 'package:fab_filter/filter_icon.dart';
-import 'package:fab_filter/line.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 import 'action_icons.dart';
 import 'action_icons_container.dart';
+import 'change_notifier/filters_change_notifier.dart';
 import 'custom_drawer.dart';
 import 'fab_container.dart';
 import 'filter_pageview_container.dart';
-import 'filter_pageview_indicator_container.dart';
+import 'filter_pageview_indicator.dart';
 import 'list_item.dart';
 
 class HomePage extends StatefulWidget {
@@ -41,6 +40,7 @@ class _HomePageState extends State<HomePage>
 
   @override
   void initState() {
+    print("home initstate duration: ${widget.duration}");
     _controller = AnimationController(
       duration: widget.duration,
       reverseDuration: widget.duration,
@@ -124,11 +124,12 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    print("home built with duration: ${widget.duration}");
+
     var mq = MediaQuery.of(context);
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColorLight,
       drawer: Drawer(
-        key: ValueKey(1),
         elevation: 24.0,
         child: CustomDrawer(),
       ),
@@ -155,7 +156,9 @@ class _HomePageState extends State<HomePage>
                           ? SizedBox(
                               height: 12,
                             )
-                          : FadeTransition(
+                          :
+                          // : child
+                          FadeTransition(
                               opacity: _opacityAnimation,
                               child: ScaleTransition(
                                 alignment: Alignment.topCenter,
@@ -163,7 +166,8 @@ class _HomePageState extends State<HomePage>
                                 child: Container(
                                   margin: EdgeInsets.symmetric(
                                     horizontal: 12,
-                                    vertical: (1 - _scaleAnimation.value) * -40 + 8,
+                                    vertical:
+                                        (1 - _scaleAnimation.value) * -40 + 8,
                                     // horizontal: _listViewAnimation.value * 18 + 12,
                                     // vertical: _listViewAnimation.value * -4 + 8,
                                   ),
@@ -171,12 +175,6 @@ class _HomePageState extends State<HomePage>
                                 ),
                               ),
                             );
-                      ListItem(
-                        key: ValueKey(index),
-                        // opacity: _opacityAnimation.value,
-                        // verticalPadding: _listViewAnimation.value * -4 + 24,
-                        // horizontalMargin: _listViewAnimation.value * 18 + 18,
-                      );
                     },
                   ),
                 ),
@@ -246,10 +244,31 @@ class _HomePageState extends State<HomePage>
                   children: [
                     AnimatedBuilder(
                       animation: _filterSheetAnimation,
-                      builder: (context, child) =>
-                          FilterPageViewIndicatorContainer(
-                        filterSheetAnimation: _filterSheetAnimation,
-                        constraints: constraints,
+                      child: FilterPageViewIndicator(
+                        currentPage: 2,
+                      ),
+                      builder: (context, child) => Positioned(
+                        top: (1 - _filterSheetAnimation.value) * 64 + 0,
+                        left: 0,
+                        right: 0,
+                        bottom: constraints.maxHeight -
+                            64 -
+                            ((1 - _filterSheetAnimation.value) * 86),
+                        child: IgnorePointer(
+                          ignoring: false,
+                          child: Opacity(
+                            opacity:
+                                _filterSheetAnimation.value == 0 ? 0.0 : 1.0,
+                            child: ChangeNotifierProvider(
+                              create: (context) => FiltersChangeNotifier(),
+                              child: Container(
+                                alignment: Alignment.center,
+                                color: Color(0xff164A6D),
+                                child: child,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                     Positioned(
@@ -345,46 +364,6 @@ class _HomePageState extends State<HomePage>
               ),
             ),
           ),
-          // AnimatedBuilder(
-          //   animation: _controller,
-          //   child: SliverPersistentHeader(
-          //     delegate: CustomAppBar(),
-          //     pinned: true,
-          //   ),
-          //   builder: (context, child) => CustomScrollView(
-          //     slivers: [
-          //       child,
-          //       SliverList(
-          //         delegate: SliverChildBuilderDelegate(
-          //           (context, position) {
-          //             print("building item: $position");
-          //             if (position == 0)
-          //               return SizedBox(
-          //                 height: 12,
-          //               );
-          //             return Opacity(
-          //               key: ValueKey(position),
-          //               opacity: 1,
-          //               // opacity: 1 - _listViewAnimation.value * 0.4,
-          //               child: Transform.scale(
-          //                 scale: 1,
-          //                 // scale: (1 - _listViewAnimation.value / 12),
-          //                 alignment: Alignment.topCenter,
-          //                 child: ListItem(
-          //                   key: ValueKey(position),
-          //                   horizontalMargin: 20,
-          //                   verticalPadding: 24,
-          //                   // horizontalMargin: _listViewAnimation.value * 12 + 20,
-          //                   // verticalPadding: 24 - _listViewAnimation.value * 4,
-          //                 ),
-          //               ),
-          //             );
-          //           },
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
         ],
       ),
     );

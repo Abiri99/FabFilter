@@ -20,7 +20,7 @@ class FilterPageViewIndicatorContainer extends StatelessWidget {
       left: 0,
       right: 0,
       bottom:
-          constraints.maxHeight - 64 - ((1 - filterSheetAnimation.value) * 64),
+          constraints.maxHeight - 64 - ((1 - filterSheetAnimation.value) * 86),
       child: IgnorePointer(
         ignoring: false,
         child: Opacity(

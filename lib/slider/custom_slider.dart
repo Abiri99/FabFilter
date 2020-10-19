@@ -27,7 +27,7 @@ class CustomSlider extends StatefulWidget {
 }
 
 class _CustomSliderState extends State<CustomSlider> {
-  double thumbStartX;
+  double thumbCenterX;
   int currentNode;
 
   bool stateChanged;
@@ -35,7 +35,8 @@ class _CustomSliderState extends State<CustomSlider> {
   @override
   void initState() {
     stateChanged = false;
-    thumbStartX = widget.initialValue.clamp(widget.minValue, widget.maxValue) ?? widget.width / 2;
+    thumbCenterX = (widget.initialValue/(widget.maxValue - widget.minValue)) * (widget.width - 48);
+    // thumbStartX = widget.initialValue.clamp(0, widget.width - 48) ?? widget.width / 2;
     currentNode = 0;
     super.initState();
   }
@@ -46,7 +47,7 @@ class _CustomSliderState extends State<CustomSlider> {
 
   _detectNode(DragStartDetails details) {
     var position = details.localPosition.dx;
-    if (position >= thumbStartX && position <= thumbStartX + 48) return 1;
+    if (position >= thumbCenterX - 24 && position <= thumbCenterX + 24) return 1;
     return -1;
   }
 
@@ -69,18 +70,17 @@ class _CustomSliderState extends State<CustomSlider> {
           if (currentNode == 1)
             setState(() {
               stateChanged = true;
-              thumbStartX = (thumbStartX + diff).clamp(0.0, widget.width - 48);
+              thumbCenterX = (thumbCenterX + diff).clamp(24.0, widget.width - 24);
             });
         },
         onHorizontalDragEnd: (dragEndDetails) {
-          var value = ((thumbStartX + 24) * (widget.maxValue - widget.minValue) / (widget.width));
-          print("value: $value");
+          var value = ((thumbCenterX) * (widget.maxValue - widget.minValue) / (widget.width - 48));
           widget.onValueChange(value.floor());
         },
         child: CustomPaint(
           size: Size(widget.width, 64),
           painter: CustomSliderPainter(
-            thumbX: thumbStartX + 24,
+            thumbX: thumbCenterX,
             defaultLineColor: Color(0xff1D668F),
             progressLineColor:
                 stateChanged ? Color(0xff359DBA) : Color(0xff1D668F),

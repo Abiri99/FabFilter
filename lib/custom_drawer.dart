@@ -9,8 +9,6 @@ class CustomDrawer extends StatefulWidget {
 }
 
 class _CustomDrawerState extends State<CustomDrawer> {
-  AnimationChangeNotifier animationChangeNotifier;
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -23,7 +21,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    animationChangeNotifier = Provider.of<AnimationChangeNotifier>(context);
+    AnimationChangeNotifier animationChangeNotifier = Provider.of<AnimationChangeNotifier>(context);
+    print("drawer duration: ${animationChangeNotifier.duration.inMilliseconds}");
     return Container(
       color: Theme.of(context).primaryColorDark,
       alignment: Alignment.center,
@@ -39,31 +38,20 @@ class _CustomDrawerState extends State<CustomDrawer> {
           ),
           Container(
             // color: Colors.red,
-            width: 200,
+            width: 250,
             child: CustomSlider(
-              width: 200,
+              width: 250,
               maxValue: 10000,
               minValue: 1000,
-              initialValue: animationChangeNotifier.duration.inMilliseconds.toDouble(),
+              initialValue: 1000 + 10000 - animationChangeNotifier.duration.inMilliseconds.toDouble(),
               onValueChange: (value) {
-                animationChangeNotifier.setDuration(value);
+                var duration = 10000 - (value - 1000);
+                animationChangeNotifier.setDuration(duration);
               },
             ),
           ),
         ],
       ),
-      // child: Slider(
-      //   value: animationChangeNotifier.sliderValue ?? 1400.0,
-      //   min: 100.0,
-      //   max: 8000.0,
-      //   onChanged: (value) {
-      //     animationChangeNotifier.setSliderValue(value);
-      //   },
-      //   onChangeEnd: (value) {
-      //     print("end: $value");
-      //     animationChangeNotifier.setDuration(value.toInt());
-      //   },
-      // ),
     );
   }
 }

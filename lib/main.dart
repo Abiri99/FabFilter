@@ -1,9 +1,14 @@
 import 'package:fab_filter/change_notifier/animation_change_notifier.dart';
 import 'package:fab_filter/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent, // transparent status bar
+  ));
   runApp(MyApp());
 }
 
@@ -26,10 +31,13 @@ class MyApp extends StatelessWidget {
       home: ChangeNotifierProvider.value(
         value: AnimationChangeNotifier(),
         child: Consumer<AnimationChangeNotifier>(
-          builder: (context, animationCN, __) => HomePage(
-            key: ValueKey(animationCN.duration.inMilliseconds),
-            duration: animationCN.duration,
-          ),
+          builder: (context, animationCN, __) {
+            print("passing animation to homepage");
+            return HomePage(
+              key: ValueKey(animationCN.duration.inMilliseconds),
+              duration: animationCN.duration,
+            );
+          },
         ),
       ),
     );
