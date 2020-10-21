@@ -8,10 +8,13 @@ import 'package:provider/provider.dart';
 
 class FilterPageViewIndicator extends StatefulWidget {
   final double currentPage;
+  final Function(double value) pageChangeCallback;
 
   FilterPageViewIndicator({
     @required this.currentPage,
-  }) : assert(currentPage != null);
+    @required this.pageChangeCallback,
+  })  : assert(currentPage != null),
+        assert(pageChangeCallback != null);
 
   @override
   _FilterPageViewIndicatorState createState() =>
@@ -20,6 +23,7 @@ class FilterPageViewIndicator extends StatefulWidget {
 
 class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator> {
   ScrollController _controller;
+
   // CustomScrollPhysics _physics;
   // SwiperController _controller;
   int currentPage;
@@ -29,6 +33,9 @@ class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator> {
     currentPage = 0;
     // _controller = SwiperController();
     _controller = ScrollController();
+    _controller.addListener(() {
+      widget.pageChangeCallback(_controller.offset / 116);
+    });
     // _controller.addListener(() {
     //   if (_controller.position.haveDimensions && _physics == null) {
     //     setState(() {
@@ -63,7 +70,8 @@ class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator> {
       child: ListView.builder(
         physics: NeverScrollableScrollPhysics(),
         controller: _controller,
-        padding: EdgeInsets.only(left: 24, right: MediaQuery.of(context).size.width - 144),
+        padding: EdgeInsets.only(
+            left: 24, right: MediaQuery.of(context).size.width - 144),
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
         itemCount: filtersChangeNotifier.filters.length,
@@ -76,10 +84,13 @@ class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator> {
                 animateToItem(position);
               },
               child: Container(
+                key: UniqueKey(),
                 height: 20,
                 width: 100,
                 decoration: BoxDecoration(
-                  color: Color(0xff356E8C),
+                  color: position == (_controller.offset / 116)
+                      ? Colors.white
+                      : Color(0xff356E8C),
                   borderRadius: BorderRadius.all(
                     Radius.circular(50),
                   ),

@@ -25,7 +25,7 @@ class CustomAppBar extends SliverPersistentHeaderDelegate {
                   top: MediaQuery.of(context).viewPadding.top,
                 ),
                 child: Transform.scale(
-                  scale: ((percent * 1.0) + 0.8),
+                  scale: ((percent/2 * 1.0) + 1.0),
                   child: Line(
                     width: 80,
                     height: 10,
@@ -44,7 +44,7 @@ class CustomAppBar extends SliverPersistentHeaderDelegate {
                     child: IconButton(
                       icon: Icon(Icons.menu),
                       color: Theme.of(context).primaryColorLight,
-                      iconSize: 34,
+                      iconSize: 32,
                       onPressed: () {
                         Scaffold.of(context).openDrawer();
                       },
@@ -63,8 +63,8 @@ class CustomAppBar extends SliverPersistentHeaderDelegate {
   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
 
   @override
-  double get maxExtent => 90.0;
+  double get maxExtent => 80.0;
 
   @override
-  double get minExtent => 65.0;
+  double get minExtent => 55.0;
 }

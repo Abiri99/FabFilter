@@ -35,8 +35,26 @@ class _HomeBodyState extends State<HomeBody>
   Animation<double> _actionIconTranslateAnimation;
   Animation<double> _filterSheetAnimation;
 
+  PageController _pageController;
+  double _page;
+
+  _pageChangeCallback(double page) {
+    _pageController.animateTo(
+      page * 116,
+      duration: Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+    );
+  }
+
   @override
   void initState() {
+    _pageController = PageController(initialPage: 0);
+    _page = 0;
+    _pageController.addListener(() {
+      setState(() {
+        _page = _pageController.page;
+      });
+    });
     _controller = AnimationController(
       duration: widget.duration,
       reverseDuration: widget.duration,
@@ -125,6 +143,7 @@ class _HomeBodyState extends State<HomeBody>
       fit: StackFit.expand,
       children: [
         CustomScrollView(
+          physics: BouncingScrollPhysics(),
           slivers: [
             SliverPersistentHeader(
               delegate: CustomAppBar(),
@@ -181,7 +200,8 @@ class _HomeBodyState extends State<HomeBody>
                         alignment: Alignment.center,
                         color: Color(0xff164A6D),
                         child: FilterPageViewIndicator(
-                          currentPage: 2,
+                          currentPage: _page,
+                          pageChangeCallback: _pageChangeCallback,
                         ),
                       ),
                     ),
@@ -193,7 +213,8 @@ class _HomeBodyState extends State<HomeBody>
                           64 -
                           ((1 - _filterSheetAnimation.value) * 86),
                       child: IgnorePointer(
-                        ignoring: _filterSheetAnimation.value == 0 ? true : false,
+                        ignoring:
+                            _filterSheetAnimation.value == 0 ? true : false,
                         child: Opacity(
                           opacity: _filterSheetAnimation.value == 0 ? 0.0 : 1.0,
                           child: child,
@@ -274,6 +295,7 @@ class _HomeBodyState extends State<HomeBody>
                                     Container(
                                   child: PageView.builder(
                                     physics: BouncingScrollPhysics(),
+                                    controller: _pageController,
                                     itemCount:
                                         filtersChangeNotifier.filters.length,
                                     itemBuilder: (context, position) {
