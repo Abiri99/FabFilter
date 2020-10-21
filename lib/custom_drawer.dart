@@ -22,7 +22,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
   @override
   Widget build(BuildContext context) {
     AnimationChangeNotifier animationChangeNotifier = Provider.of<AnimationChangeNotifier>(context);
-    print("drawer duration: ${animationChangeNotifier.duration.inMilliseconds}");
     return Container(
       color: Theme.of(context).primaryColorDark,
       alignment: Alignment.center,

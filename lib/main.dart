@@ -30,15 +30,14 @@ class MyApp extends StatelessWidget {
       ),
       home: ChangeNotifierProvider.value(
         value: AnimationChangeNotifier(),
-        child: Consumer<AnimationChangeNotifier>(
-          builder: (context, animationCN, __) {
-            print("passing animation to homepage");
-            return HomePage(
-              key: ValueKey(animationCN.duration.inMilliseconds),
-              duration: animationCN.duration,
-            );
-          },
-        ),
+        child: HomePage(),
+        // child: Consumer<AnimationChangeNotifier>(
+        //   builder: (context, animationCN, __) {
+        //     return HomePage(
+        //       duration: animationCN.duration,
+        //     );
+        //   },
+        // ),
       ),
     );
   }

@@ -5,7 +5,6 @@ class AnimationChangeNotifier with ChangeNotifier {
   double sliderValue;
 
   AnimationChangeNotifier() {
-    print("animationCN created");
     this.duration = Duration(milliseconds: 2000);
     this.sliderValue = 2000.0;
   }
