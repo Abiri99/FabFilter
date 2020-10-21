@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'action_icons.dart';
-import 'action_icons_container.dart';
 import 'change_notifier/filters_change_notifier.dart';
 import 'custom_appbar.dart';
-import 'fab_container.dart';
-import 'filter_pageview_container.dart';
+import 'filter_icon.dart';
 import 'filter_pageview_indicator.dart';
+import 'filter_view.dart';
+import 'filter_view2.dart';
 import 'list_item.dart';
 
 const String TAG = "HomePage";
 
 class HomeBody extends StatefulWidget {
-
   final Duration duration;
 
   HomeBody({Key key, this.duration}) : super(key: key);
@@ -40,7 +37,6 @@ class _HomeBodyState extends State<HomeBody>
 
   @override
   void initState() {
-    print("$TAG didChangeDependencies");
     _controller = AnimationController(
       duration: widget.duration,
       reverseDuration: widget.duration,
@@ -137,10 +133,6 @@ class _HomeBodyState extends State<HomeBody>
             AnimatedBuilder(
               animation: _listViewAnimation,
               child: ListItem(),
-              // child: Container(
-              //   height: 100,
-              //   color: Colors.red,
-              // ),
               builder: (context, child) => SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
@@ -160,8 +152,6 @@ class _HomeBodyState extends State<HomeBody>
                                   horizontal: 12,
                                   vertical:
                                       (1 - _scaleAnimation.value) * -40 + 8,
-                                  // horizontal: _listViewAnimation.value * 18 + 12,
-                                  // vertical: _listViewAnimation.value * -4 + 8,
                                 ),
                                 child: child,
                               ),
@@ -171,57 +161,6 @@ class _HomeBodyState extends State<HomeBody>
                 ),
               ),
             ),
-            // SliverFillRemaining(
-            //   child: FadeTransition(
-            //     opacity: _opacityAnimation,
-            //     child: ScaleTransition(
-            //       scale: _scaleAnimation,
-            //       alignment: Alignment.topCenter,
-            //       child: ListView.builder(
-            //         semanticChildCount: 20,
-            //         addAutomaticKeepAlives: false,
-            //         // cacheExtent: 5000,
-            //         itemCount: 30,
-            //         itemBuilder: (context, index) => ListItem(
-            //           key: ValueKey(index),
-            //           // verticalPadding: _scaleAnimation.value * -4 + 24,
-            //           // horizontalMargin: _scaleAnimation.value * 12,
-            //           // horizontalMargin: _listViewAnimation.value * 12 + 20,
-            //           // ver
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-
-            // ),
-
-            // SliverList(
-            //   delegate: SliverChildBuilderDelegate(
-            //     (context, position) {
-            //       if (position == 0)
-            //         return SizedBox(
-            //           key: ValueKey(0),
-            //           height: 12,
-            //         );
-            //       return FadeTransition(
-            //         opacity: _opacityAnimation,
-            //         child: Container(
-            //           // height: 86,
-            //           color: Colors.white,
-            //           margin: EdgeInsets.symmetric(horizontal: _listViewAnimation.value * 12 + 20, vertical: 8,),
-            //           padding: EdgeInsets.symmetric(vertical: 24 - _listViewAnimation.value * 4),
-            //           child: Text(""),
-            //         ),
-            //       );
-            //       // return ListItem(
-            //       //   key: ValueKey(position),
-            //       //   horizontalMargin: _listViewAnimation.value * 12 + 20,
-            //       //   verticalPadding: 24 - _listViewAnimation.value * 4,
-            //       // );
-            //     },
-            //   ),
-            // ),
           ],
         ),
         Positioned(
@@ -231,13 +170,20 @@ class _HomeBodyState extends State<HomeBody>
           bottom: 0,
           child: LayoutBuilder(
             builder: (context, constraints) => Container(
-              // color: Colors.red,
               child: Stack(
                 children: [
+                  // PageView Indicators
                   AnimatedBuilder(
                     animation: _filterSheetAnimation,
-                    child: FilterPageViewIndicator(
-                      currentPage: 2,
+                    child: ChangeNotifierProvider(
+                      create: (context) => FiltersChangeNotifier(),
+                      child: Container(
+                        alignment: Alignment.center,
+                        color: Color(0xff164A6D),
+                        child: FilterPageViewIndicator(
+                          currentPage: 2,
+                        ),
+                      ),
                     ),
                     builder: (context, child) => Positioned(
                       top: (1 - _filterSheetAnimation.value) * 64 + 0,
@@ -247,77 +193,183 @@ class _HomeBodyState extends State<HomeBody>
                           64 -
                           ((1 - _filterSheetAnimation.value) * 86),
                       child: IgnorePointer(
-                        ignoring: false,
+                        ignoring: _filterSheetAnimation.value == 0 ? true : false,
                         child: Opacity(
                           opacity: _filterSheetAnimation.value == 0 ? 0.0 : 1.0,
-                          child: ChangeNotifierProvider(
-                            create: (context) => FiltersChangeNotifier(),
-                            child: Container(
-                              alignment: Alignment.center,
-                              color: Color(0xff164A6D),
-                              child: child,
-                            ),
-                          ),
+                          child: child,
                         ),
                       ),
                     ),
                   ),
+                  // Fab Background
                   Positioned(
                     top: 64,
                     right: 0,
                     left: 0,
                     bottom: 0,
                     child: Container(
-                      // color: Colors.blue,
-                      // margin: const EdgeInsets.only(top: 64),
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                          /// Fab background
+                          // Fab background
                           AnimatedBuilder(
-                            animation: _controller,
-                            builder: (context, child) => FabContainer(
-                              controller: _controller,
-                              fabRevealAnimation: _fabRevealAnimation,
-                              xAxisPositionAnimation: _xAxisPositionAnimation,
-                              yAxisPositionAnimation: _yAxisPositionAnimation,
-                              constraints: constraints,
+                            animation: _fabRevealAnimation,
+                            builder: (context, child) => Positioned(
+                              bottom: (1 - _fabRevealAnimation.value) *
+                                  (_yAxisPositionAnimation.value *
+                                      (constraints.maxHeight / 2 - 70)),
+                              right: (1 - _fabRevealAnimation.value) *
+                                  (_xAxisPositionAnimation.value *
+                                      (MediaQuery.of(context).size.width / 2 -
+                                          56)),
+                              child: GestureDetector(
+                                onTap: () {
+                                  if (_controller.status ==
+                                      AnimationStatus.completed)
+                                    _controller.reverse();
+                                  else
+                                    _controller.forward();
+                                },
+                                child: Container(
+                                  height: (_fabRevealAnimation.value) *
+                                          (constraints.maxHeight - 64) +
+                                      (1 - _fabRevealAnimation.value) * 64,
+                                  width: (_fabRevealAnimation.value) *
+                                          constraints.maxWidth +
+                                      (1 - _fabRevealAnimation.value) * 64,
+                                  margin: EdgeInsets.all(
+                                      (1 - _fabRevealAnimation.value) * 24),
+                                  padding: const EdgeInsets.all(32),
+                                  child: Center(
+                                    child: SizedBox(),
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).primaryColorDark,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(
+                                          (1 - _fabRevealAnimation.value) *
+                                              500),
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black26,
+                                        offset: Offset(0, 15),
+                                        blurRadius: 15,
+                                        spreadRadius: -8,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
 
-                          /// PageView
+                          // Filter PageView
                           AnimatedBuilder(
                             animation: _filterSheetAnimation,
+                            child: ChangeNotifierProvider(
+                              create: (context) => FiltersChangeNotifier(),
+                              child: Consumer<FiltersChangeNotifier>(
+                                builder: (_, filtersChangeNotifier, __) =>
+                                    Container(
+                                  child: PageView.builder(
+                                    physics: BouncingScrollPhysics(),
+                                    itemCount:
+                                        filtersChangeNotifier.filters.length,
+                                    itemBuilder: (context, position) {
+                                      return filtersChangeNotifier
+                                                  .filters[position]["type"] ==
+                                              2
+                                          ? FilterView2(
+                                              key: ValueKey(
+                                                  filtersChangeNotifier
+                                                          .filters[position]
+                                                      ["status"]),
+                                            )
+                                          : FilterView(
+                                              filtersChangeNotifier:
+                                                  filtersChangeNotifier,
+                                              position: position,
+                                              key: ValueKey(
+                                                  filtersChangeNotifier
+                                                          .filters[position]
+                                                      ["status"]),
+                                            );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
                             builder: (context, child) => IgnorePointer(
                               ignoring: _filterSheetAnimation.value == 1.0
                                   ? false
                                   : true,
-                              child: FilterPageViewContainer(
-                                  _filterSheetAnimation),
+                              child: Transform.translate(
+                                offset: Offset(
+                                    0, 36 * (1 - _filterSheetAnimation.value)),
+                                child: FadeTransition(
+                                  opacity: _filterSheetAnimation,
+                                  child: child,
+                                ),
+                              ),
                             ),
                           ),
 
-                          /// Action Icons Background Container
+                          // Action Icons Background Container
                           AnimatedBuilder(
                             animation: _filterSheetAnimation,
-                            builder: (context, child) =>
-                                ActionIconsContainer(_filterSheetAnimation),
-                          ),
-
-                          /// Action Icons
-                          AnimatedBuilder(
-                            animation: _controller,
-                            builder: (context, child) => ActionIcons(
-                              fabIconFallAnimation: _fabIconFallAnimation,
-                              xAxisPositionAnimation: _xAxisPositionAnimation,
-                              yAxisPositionAnimation: _yAxisPositionAnimation,
-                              actionIconTranslateAnimation:
-                                  _actionIconTranslateAnimation,
-                              constraints: constraints,
+                            child: Container(
+                              height: 64,
+                              color: Color(0xff33779C),
+                            ),
+                            builder: (context, child) => Positioned(
+                              bottom: 0,
+                              right: 0,
+                              left: 0,
+                              child: IgnorePointer(
+                                child: Opacity(
+                                  opacity: 1.0 * _filterSheetAnimation.value,
+                                  child: child,
+                                ),
+                              ),
                             ),
                           ),
+
+                          // Filter Icon
+                          AnimatedBuilder(
+                            animation: _controller,
+                            child: IgnorePointer(
+                              child: Container(
+                                height: 32,
+                                width: 32,
+                                child: FilterIcon(),
+                              ),
+                            ),
+                            builder: (context, child) => Positioned(
+                              bottom: (1 - _fabIconFallAnimation.value) *
+                                      (_yAxisPositionAnimation.value *
+                                          (constraints.maxHeight / 2 - 70)) +
+                                  16 +
+                                  (1 - _fabIconFallAnimation.value) * 24,
+                              right: (_xAxisPositionAnimation.value *
+                                      (MediaQuery.of(context).size.width / 2 -
+                                          56)) -
+                                  (_actionIconTranslateAnimation.value *
+                                      constraints.maxWidth /
+                                      4) +
+                                  40,
+                              child: child,
+                            ),
+                          ),
+
+                          // Close Icon
                           AnimatedBuilder(
                             animation: _actionIconTranslateAnimation,
+                            child: Icon(
+                              Icons.close,
+                              size: 28,
+                              color: Color(0xff8EB8C6),
+                            ),
                             builder: (context, child) => Positioned(
                               bottom: 16,
                               left: 16 +
@@ -336,11 +388,7 @@ class _HomeBodyState extends State<HomeBody>
                                   child: Opacity(
                                     opacity:
                                         _actionIconTranslateAnimation.value,
-                                    child: Icon(
-                                      Icons.close,
-                                      size: 28,
-                                      color: Color(0xff8EB8C6),
-                                    ),
+                                    child: child,
                                   ),
                                 ),
                               ),

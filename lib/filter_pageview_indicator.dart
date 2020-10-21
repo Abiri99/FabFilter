@@ -1,6 +1,7 @@
 import 'package:fab_filter/change_notifier/filters_change_notifier.dart';
 import 'package:fab_filter/line.dart';
 import 'package:fab_filter/util/custom_scroll_physics.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:provider/provider.dart';
@@ -18,16 +19,16 @@ class FilterPageViewIndicator extends StatefulWidget {
 }
 
 class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator> {
-  // ScrollController _controller;
+  ScrollController _controller;
   // CustomScrollPhysics _physics;
-  SwiperController _controller;
+  // SwiperController _controller;
   int currentPage;
 
   @override
   void initState() {
     currentPage = 0;
-    _controller = SwiperController();
-    // _controller = ScrollController();
+    // _controller = SwiperController();
+    _controller = ScrollController();
     // _controller.addListener(() {
     //   if (_controller.position.haveDimensions && _physics == null) {
     //     setState(() {
@@ -42,29 +43,72 @@ class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator> {
 
   @override
   void dispose() {
-    // _controller.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   animateToItem(int position) {
-    // _controller.animateTo(
-    //   (position.toDouble() * 100) - 24,
-    //   duration: Duration(milliseconds: 200),
-    //   curve: Curves.easeInOut,
-    // );
+    _controller.animateTo(
+      (position.toDouble() * 116),
+      duration: Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     FiltersChangeNotifier filtersChangeNotifier =
         Provider.of<FiltersChangeNotifier>(context);
+    return Container(
+      child: ListView.builder(
+        physics: NeverScrollableScrollPhysics(),
+        controller: _controller,
+        padding: EdgeInsets.only(left: 24, right: MediaQuery.of(context).size.width - 144),
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        itemCount: filtersChangeNotifier.filters.length,
+        itemBuilder: (context, position) {
+          return Align(
+            alignment: Alignment.center,
+            child: GestureDetector(
+              behavior: HitTestBehavior.deferToChild,
+              onTap: () {
+                animateToItem(position);
+              },
+              child: Container(
+                height: 20,
+                width: 100,
+                decoration: BoxDecoration(
+                  color: Color(0xff356E8C),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(50),
+                  ),
+                ),
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                ),
+                // child: Transform.scale(
+                //   scale: 1.0,
+                //   child: Line(
+                //     tapable: false,
+                //     color: Color(0xff356E8C),
+                //     height: 20,
+                //     width: 100,
+                //   ),
+                // ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
 
     return IgnorePointer(
       ignoring: false,
       child: Swiper(
         itemCount: 5,
         loop: false,
-        controller: _controller,
+        // controller: _controller,
         viewportFraction: 0.3,
         index: currentPage,
         onTap: (index) {

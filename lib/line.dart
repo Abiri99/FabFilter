@@ -44,48 +44,51 @@ class _LineState extends State<Line> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (widget.tapable) {
-          setState(() {
-            _tapped = !_tapped;
-          });
-        }
-      },
-      child: Container(
-        width: widget.width,
-        height: widget.height,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            AnimatedContainer(
-              duration: Duration(milliseconds: 200),
-              margin: EdgeInsets.only(
-                top: widget.withBadge ? 4 : 0,
-              ),
-              decoration: BoxDecoration(
-                color: _tapped ? widget.secondaryColor : widget.color,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(100),
+    return IgnorePointer(
+      ignoring: !widget.tapable,
+      child: GestureDetector(
+        onTap: () {
+          if (widget.tapable) {
+            setState(() {
+              _tapped = !_tapped;
+            });
+          }
+        },
+        child: Container(
+          width: widget.width,
+          height: widget.height,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              AnimatedContainer(
+                duration: Duration(milliseconds: 200),
+                margin: EdgeInsets.only(
+                  top: widget.withBadge ? 4 : 0,
                 ),
-              ),
-            ),
-            widget.withBadge ? Positioned(
-              top: widget.height / 2 - 8,
-              right: -4,
-              child: Container(
-                width: 16,
-                height: 16,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).accentColor,
+                  color: _tapped ? widget.secondaryColor : widget.color,
                   borderRadius: BorderRadius.all(
-                    Radius.circular(25),
+                    Radius.circular(100),
                   ),
-                  border: Border.all(color: Color(0xff164A6D), width: 3,),
                 ),
               ),
-            ) : SizedBox(),
-          ],
+              widget.withBadge ? Positioned(
+                top: widget.height / 2 - 8,
+                right: -4,
+                child: Container(
+                  width: 16,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).accentColor,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(25),
+                    ),
+                    border: Border.all(color: Color(0xff164A6D), width: 3,),
+                  ),
+                ),
+              ) : SizedBox(),
+            ],
+          ),
         ),
       ),
     );
