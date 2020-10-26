@@ -56,31 +56,32 @@ class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator> {
               onTap: () {
                 animateToItem(position);
               },
-              child: Container(
-                key: UniqueKey(),
-                height: 20,
-                width: 100,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity((1 - (widget.currentPage - position).abs()).clamp(0.2, 1.0)),
-                  // color: widget.currentPage == position
-                  //     ? Colors.white
-                  //     : Color(0xff356E8C),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(50),
+              child: Transform.scale(
+                scale: 1 - (0.1 * (widget.currentPage - position).clamp(-1, 1).abs()),
+                // scale: (1 - (widget.currentPage - position).clamp(-0.2, 0.2).abs()),
+                child: Container(
+                  key: UniqueKey(),
+                  height: 20,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity((1 - (widget.currentPage - position).abs()).clamp(0.2, 1.0)),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(50),
+                    ),
                   ),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                  ),
+                  // child: Transform.scale(
+                  //   scale: 1.0,
+                  //   child: Line(
+                  //     tapable: false,
+                  //     color: Color(0xff356E8C),
+                  //     height: 20,
+                  //     width: 100,
+                  //   ),
+                  // ),
                 ),
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                ),
-                // child: Transform.scale(
-                //   scale: 1.0,
-                //   child: Line(
-                //     tapable: false,
-                //     color: Color(0xff356E8C),
-                //     height: 20,
-                //     width: 100,
-                //   ),
-                // ),
               ),
             ),
           );
