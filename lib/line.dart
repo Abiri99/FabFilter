@@ -6,7 +6,9 @@ class Line extends StatefulWidget {
   final double width;
   final double height;
   final bool withBadge;
-  final bool tapable;
+  final bool selectable;
+  final Function onTap;
+  final bool isSelected;
 
   Line({
     Key key,
@@ -15,7 +17,9 @@ class Line extends StatefulWidget {
     this.width = double.infinity,
     this.height = 16,
     this.withBadge = false,
-    this.tapable = false,
+    this.selectable = false,
+    this.onTap,
+    this.isSelected = false,
   }) : super(key: key);
 
   @override
@@ -28,7 +32,7 @@ class _LineState extends State<Line> {
 
   @override
   void initState() {
-    _tapped = false;
+    _tapped = widget.isSelected;
     super.initState();
   }
 
@@ -45,10 +49,11 @@ class _LineState extends State<Line> {
   @override
   Widget build(BuildContext context) {
     return IgnorePointer(
-      ignoring: !widget.tapable,
+      ignoring: !widget.selectable,
       child: GestureDetector(
         onTap: () {
-          if (widget.tapable) {
+          if (widget.selectable) {
+            widget.onTap();
             setState(() {
               _tapped = !_tapped;
             });

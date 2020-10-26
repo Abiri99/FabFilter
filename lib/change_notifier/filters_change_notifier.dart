@@ -1,9 +1,6 @@
+import 'package:fab_filter/change_notifier/filter1_change_notifier.dart';
+import 'package:fab_filter/change_notifier/filter2_change_notifier.dart';
 import 'package:flutter/cupertino.dart';
-
-enum FilterStatus {
-  Changed,
-  NotChanged,
-}
 
 class FiltersChangeNotifier with ChangeNotifier {
 
@@ -14,49 +11,23 @@ class FiltersChangeNotifier with ChangeNotifier {
   }
 
   List filters = [
-    {
-      "type": 1,
-      "status": FilterStatus.Changed,
-      "data": {
-        "count": 5,
-        "items_selected": [],
-      },
-    },
-    {
-      "type": 1,
-      "status": FilterStatus.Changed,
-      "data": {
-        "count": 5,
-        "items_selected": [],
-      },
-    },
-    {
-      "type": 2,
-      "status": FilterStatus.Changed,
-    },
-    {
-      "type": 1,
-      "status": FilterStatus.Changed,
-      "data": {
-        "count": 5,
-        "items_selected": [],
-      },
-    },
-    {
-      "type": 1,
-      "status": FilterStatus.Changed,
-      "data": {
-        "count": 5,
-        "items_selected": [],
-      },
-    },
+    Filter1ChangeNotifier(),
+    Filter1ChangeNotifier(),
+    Filter2ChangeNotifier(),
+    Filter1ChangeNotifier(),
+    Filter1ChangeNotifier(),
   ];
-
-  setFilterStatus(int position, FilterStatus status) {
-    (filters[position] as Map).update("status", (value) => status);
-    notifyListeners();
-  }
-
+  // setFilterStatus(int position, FilterStatus status) {
+  //   (filters[position] as Map).update("status", (value) => status);
+  //   notifyListeners();
+  // }
+  //
+  // setSelectedItems(int position, List items) {
+  //   filters.elementAt(position)["data"]["items_selected"] = items;
+  //   filters.elementAt(position)["data"]["status"] = FilterStatus.Changed;
+  //   notifyListeners();
+  // }
+  //
   setCurrentPage(double value) {
     this.currentPage = value;
     notifyListeners();

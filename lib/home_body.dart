@@ -1,9 +1,11 @@
+import 'package:fab_filter/change_notifier/filter1_change_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'change_notifier/filter2_change_notifier.dart';
 import 'change_notifier/filters_change_notifier.dart';
 import 'custom_appbar.dart';
 import 'filter_icon.dart';
-import 'filter_pageview_indicator.dart';
+import 'filter_pageview_indicator_list.dart';
 import 'filter_view.dart';
 import 'filter_view2.dart';
 import 'list_item.dart';
@@ -50,8 +52,9 @@ class _HomeBodyState extends State<HomeBody>
 
   Future<void> registerPageListener(BuildContext context) async {
     _pageController.addListener(() {
-      _scrollController.jumpTo((mounted ? _pageController.page: 0) * 116);
-      Provider.of<FiltersChangeNotifier>(context, listen: false).setCurrentPage(_pageController.page);
+      _scrollController.jumpTo((mounted ? _pageController.page : 0) * 116);
+      Provider.of<FiltersChangeNotifier>(context, listen: false)
+          .setCurrentPage(_pageController.page);
       // setState(() {
       //   _currentPage = _pageController.page;
       // });
@@ -74,7 +77,6 @@ class _HomeBodyState extends State<HomeBody>
     // _scrollController.addListener(() {
     //   _pageController.animateToPage((_scrollController.offset / 116).toInt(), duration: Duration(milliseconds: 200), curve: Curves.easeInOut,);
     // });
-
 
     // _scrollController.attach(_pageController.position);
     // _pageController.attach(_scrollController.position);
@@ -236,12 +238,12 @@ class _HomeBodyState extends State<HomeBody>
                   Consumer<FiltersChangeNotifier>(
                     builder: (context, fcn, __) => AnimatedBuilder(
                       animation: _filterSheetAnimation,
-                      child: ChangeNotifierProvider(
-                        create: (context) => FiltersChangeNotifier(),
+                      child: ChangeNotifierProvider.value(
+                        value: fcn,
                         child: Container(
                           alignment: Alignment.center,
                           color: Color(0xff164A6D),
-                          child: FilterPageViewIndicator(
+                          child: FilterPageViewIndicatorList(
                             scrollController: _scrollController,
                             currentPage: fcn.currentPage,
                             pageChangeCallback: animateToPage,
@@ -259,7 +261,8 @@ class _HomeBodyState extends State<HomeBody>
                           ignoring:
                               _filterSheetAnimation.value == 0 ? true : false,
                           child: Opacity(
-                            opacity: _filterSheetAnimation.value == 0 ? 0.0 : 1.0,
+                            opacity:
+                                _filterSheetAnimation.value == 0 ? 0.0 : 1.0,
                             child: child,
                           ),
                         ),
@@ -333,37 +336,48 @@ class _HomeBodyState extends State<HomeBody>
                           // Filter PageView
                           AnimatedBuilder(
                             animation: _filterSheetAnimation,
-                            child: ChangeNotifierProvider(
-                              create: (context) => FiltersChangeNotifier(),
-                              child: Consumer<FiltersChangeNotifier>(
-                                builder: (_, filtersChangeNotifier, __) =>
-                                    Container(
-                                  child: PageView.builder(
-                                    physics: BouncingScrollPhysics(),
-                                    controller: _pageController,
-                                    itemCount:
-                                        filtersChangeNotifier.filters.length,
-                                    itemBuilder: (context, position) {
-                                      return filtersChangeNotifier
-                                                  .filters[position]["type"] ==
-                                              2
-                                          ? FilterView2(
-                                              key: ValueKey(
-                                                  filtersChangeNotifier
-                                                          .filters[position]
-                                                      ["status"]),
-                                            )
-                                          : FilterView(
-                                              filtersChangeNotifier:
-                                                  filtersChangeNotifier,
-                                              position: position,
-                                              key: ValueKey(
-                                                  filtersChangeNotifier
-                                                          .filters[position]
-                                                      ["status"]),
-                                            );
-                                    },
-                                  ),
+                            child: Consumer<FiltersChangeNotifier>(
+                              builder: (_, filtersChangeNotifier, __) =>
+                                  Container(
+                                child: PageView.builder(
+                                  physics: BouncingScrollPhysics(),
+                                  controller: _pageController,
+                                  itemCount:
+                                      filtersChangeNotifier.filters.length,
+                                  itemBuilder: (context, position) {
+                                    return filtersChangeNotifier.filters.elementAt(position).runtimeType == Filter2ChangeNotifier
+                                        ? ChangeNotifierProvider.value(
+                                            value: filtersChangeNotifier
+                                                    .filters[position]
+                                                as Filter2ChangeNotifier,
+                                            child: Consumer<Filter2ChangeNotifier>(
+                                              builder: (context, fcn, __) => FilterView2(
+                                                // key: ValueKey(
+                                                  // filtersChangeNotifier
+                                                  //         .filters[position]
+                                                  //     ["status"],
+                                                // ),
+                                              ),
+                                            ),
+                                          )
+                                        : ChangeNotifierProvider.value(
+                                            value: filtersChangeNotifier
+                                                    .filters[position]
+                                                as Filter1ChangeNotifier,
+                                            child: Consumer<Filter1ChangeNotifier>(
+                                              builder: (context, fcn, __) => FilterView(
+                                                fcn:
+                                                    fcn,
+                                                position: position,
+                                                // key: ValueKey(
+                                                //   filtersChangeNotifier
+                                                //           .filters[position]
+                                                //       ["status"],
+                                                // ),
+                                              ),
+                                            ),
+                                          );
+                                  },
                                 ),
                               ),
                             ),

@@ -1,0 +1,4 @@
+enum FilterStatus {
+  Changed,
+  NotChanged,
+}
