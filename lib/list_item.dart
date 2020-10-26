@@ -8,14 +8,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ListItem extends StatefulWidget {
-  final double opacity;
 
   // final double horizontalMargin;
   // final double verticalPadding;
 
   ListItem({
     Key key,
-    this.opacity = 1.0,
     // this.horizontalMargin = 16,
     // this.verticalPadding = 24,
   }) : super(key: key);

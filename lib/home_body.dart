@@ -35,12 +35,14 @@ class _HomeBodyState extends State<HomeBody>
   Animation<double> _actionIconTranslateAnimation;
   Animation<double> _filterSheetAnimation;
 
+  ScrollController _scrollController;
   PageController _pageController;
-  double _page;
 
-  _pageChangeCallback(double page) {
-    _pageController.animateTo(
-      page * 116,
+  // double _page;
+
+  _pageChangeCallback(double page, MediaQueryData mq) {
+    _pageController.animateToPage(
+      page.floor(),
       duration: Duration(milliseconds: 200),
       curve: Curves.easeInOut,
     );
@@ -48,13 +50,27 @@ class _HomeBodyState extends State<HomeBody>
 
   @override
   void initState() {
+    _scrollController = ScrollController();
     _pageController = PageController(initialPage: 0);
-    _page = 0;
+    // _page = 0;
+
+    // _scrollController.addListener(() {
+    //   _pageController.animateToPage((_scrollController.offset / 116).toInt(), duration: Duration(milliseconds: 200), curve: Curves.easeInOut,);
+    // });
     _pageController.addListener(() {
-      setState(() {
-        _page = _pageController.page;
-      });
+      print("page: ${_pageController.page}");
+      _scrollController.jumpTo((_pageController.page) * 116);
     });
+
+    // _scrollController.attach(_pageController.position);
+    // _pageController.attach(_scrollController.position);
+
+    // _pageController.addListener(() {
+    //   print("page: ${_pageController.page}");
+    //   setState(() {
+    //     _page = _pageController.page;
+    //   });
+    // });
     _controller = AnimationController(
       duration: widget.duration,
       reverseDuration: widget.duration,
@@ -125,6 +141,8 @@ class _HomeBodyState extends State<HomeBody>
   @override
   void dispose() {
     _controller.dispose();
+    _scrollController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -134,6 +152,14 @@ class _HomeBodyState extends State<HomeBody>
     } else {
       if (_controller.status != AnimationStatus.reverse) _controller.reverse();
     }
+  }
+
+  animateToPage(int page) {
+    _pageController.animateToPage(
+      page,
+      duration: Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -200,8 +226,9 @@ class _HomeBodyState extends State<HomeBody>
                         alignment: Alignment.center,
                         color: Color(0xff164A6D),
                         child: FilterPageViewIndicator(
-                          currentPage: _page,
-                          pageChangeCallback: _pageChangeCallback,
+                          scrollController: _scrollController,
+                          // currentPage: _page,
+                          pageChangeCallback: animateToPage,
                         ),
                       ),
                     ),
@@ -222,6 +249,7 @@ class _HomeBodyState extends State<HomeBody>
                       ),
                     ),
                   ),
+
                   // Fab Background
                   Positioned(
                     top: 64,
