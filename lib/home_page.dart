@@ -20,7 +20,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print("$TAG build");
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColorLight,
       drawer: Drawer(

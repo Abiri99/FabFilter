@@ -1,4 +1,5 @@
 import 'package:fab_filter/change_notifier/animation_change_notifier.dart';
+import 'package:fab_filter/change_notifier/filters_change_notifier.dart';
 import 'package:fab_filter/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,8 +29,15 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: ChangeNotifierProvider.value(
-        value: AnimationChangeNotifier(),
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(
+            value: AnimationChangeNotifier(),
+          ),
+          ChangeNotifierProvider.value(
+            value: FiltersChangeNotifier(),
+          ),
+        ],
         child: HomePage(),
         // child: Consumer<AnimationChangeNotifier>(
         //   builder: (context, animationCN, __) {

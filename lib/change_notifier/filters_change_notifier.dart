@@ -7,6 +7,12 @@ enum FilterStatus {
 
 class FiltersChangeNotifier with ChangeNotifier {
 
+  double currentPage;
+
+  FiltersChangeNotifier() {
+    this.currentPage = 0.0;
+  }
+
   List filters = [
     {
       "type": 1,
@@ -48,6 +54,11 @@ class FiltersChangeNotifier with ChangeNotifier {
 
   setFilterStatus(int position, FilterStatus status) {
     (filters[position] as Map).update("status", (value) => status);
+    notifyListeners();
+  }
+
+  setCurrentPage(double value) {
+    this.currentPage = value;
     notifyListeners();
   }
 }

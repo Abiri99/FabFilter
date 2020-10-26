@@ -1,26 +1,22 @@
 import 'package:fab_filter/change_notifier/filters_change_notifier.dart';
-import 'package:fab_filter/line.dart';
-import 'package:fab_filter/util/custom_scroll_physics.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:provider/provider.dart';
 
 const String TAG = "FilterPageViewIndicator";
 
 class FilterPageViewIndicator extends StatefulWidget {
   final ScrollController scrollController;
-  // final double currentPage;
   final Function(int page) pageChangeCallback;
+  final double currentPage;
 
   FilterPageViewIndicator({
     Key key,
     @required this.scrollController,
-    // @required this.currentPage,
     @required this.pageChangeCallback,
+    @required this.currentPage,
   })  : assert(scrollController != null),
-        // assert(currentPage != null),
         assert(pageChangeCallback != null),
+        assert(currentPage != null),
         super(key: key);
 
   @override
@@ -29,35 +25,6 @@ class FilterPageViewIndicator extends StatefulWidget {
 }
 
 class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator> {
-  // ScrollController _controller;
-
-  @override
-  void initState() {
-    // print("initState");
-    // _controller = SwiperController();
-    // _controller = ScrollController(initialScrollOffset: widget.currentPage);
-    // _controller.addListener(() {
-    //   print("$TAG offset: ${_controller.offset}");
-      // widget.pageChangeCallback(_controller.offset / 116);
-    // });
-    // _controller.addListener(() {
-    //   if (_controller.position.haveDimensions && _physics == null) {
-    //     setState(() {
-    //       var dimension =
-    //           _controller.position.maxScrollExtent / (4 - 1);
-    //       _physics = CustomScrollPhysics(itemDimension: dimension);
-    //     });
-    //   }
-    // });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    // _controller.dispose();
-    super.dispose();
-  }
-
   animateToItem(int position) {
     widget.scrollController.animateTo(
       (position.toDouble() * 116),
@@ -67,19 +34,13 @@ class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator> {
     widget.pageChangeCallback(position);
   }
 
-  scrollToPosition(double position) {
-    // _controller.jumpTo(position);
-  }
-
   @override
   Widget build(BuildContext context) {
-    // print("pageeeee: ${widget.currentPage}");
+    print("page: ${widget.currentPage}");
     FiltersChangeNotifier filtersChangeNotifier =
         Provider.of<FiltersChangeNotifier>(context);
     return Container(
-      // key: ValueKey(widget.currentPage),
       child: ListView.builder(
-        // key: ValueKey(widget.currentPage),
         physics: NeverScrollableScrollPhysics(),
         controller: widget.scrollController,
         padding: EdgeInsets.only(
@@ -100,8 +61,8 @@ class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator> {
                 height: 20,
                 width: 100,
                 decoration: BoxDecoration(
-                  color: Color(0xff356E8C),
-                  // color: position == (_controller.offset / 116)
+                  color: Colors.white.withOpacity((1 - (widget.currentPage - position).abs()).clamp(0.2, 1.0)),
+                  // color: widget.currentPage == position
                   //     ? Colors.white
                   //     : Color(0xff356E8C),
                   borderRadius: BorderRadius.all(

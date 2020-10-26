@@ -38,7 +38,7 @@ class _HomeBodyState extends State<HomeBody>
   ScrollController _scrollController;
   PageController _pageController;
 
-  // double _page;
+  double _currentPage;
 
   _pageChangeCallback(double page, MediaQueryData mq) {
     _pageController.animateToPage(
@@ -48,19 +48,33 @@ class _HomeBodyState extends State<HomeBody>
     );
   }
 
+  Future<void> registerPageListener(BuildContext context) async {
+    _pageController.addListener(() {
+      _scrollController.jumpTo((mounted ? _pageController.page: 0) * 116);
+      Provider.of<FiltersChangeNotifier>(context, listen: false).setCurrentPage(_pageController.page);
+      // setState(() {
+      //   _currentPage = _pageController.page;
+      // });
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    registerPageListener(context);
+    super.didChangeDependencies();
+  }
+
   @override
   void initState() {
     _scrollController = ScrollController();
     _pageController = PageController(initialPage: 0);
     // _page = 0;
+    _currentPage = 0;
 
     // _scrollController.addListener(() {
     //   _pageController.animateToPage((_scrollController.offset / 116).toInt(), duration: Duration(milliseconds: 200), curve: Curves.easeInOut,);
     // });
-    _pageController.addListener(() {
-      print("page: ${_pageController.page}");
-      _scrollController.jumpTo((_pageController.page) * 116);
-    });
+
 
     // _scrollController.attach(_pageController.position);
     // _pageController.attach(_scrollController.position);
@@ -164,6 +178,7 @@ class _HomeBodyState extends State<HomeBody>
 
   @override
   Widget build(BuildContext context) {
+    // WidgetsBinding.instance.addPostFrameCallback((_) => registerPageListener());
     var mq = MediaQuery.of(context);
     return Stack(
       fit: StackFit.expand,
@@ -218,33 +233,35 @@ class _HomeBodyState extends State<HomeBody>
               child: Stack(
                 children: [
                   // PageView Indicators
-                  AnimatedBuilder(
-                    animation: _filterSheetAnimation,
-                    child: ChangeNotifierProvider(
-                      create: (context) => FiltersChangeNotifier(),
-                      child: Container(
-                        alignment: Alignment.center,
-                        color: Color(0xff164A6D),
-                        child: FilterPageViewIndicator(
-                          scrollController: _scrollController,
-                          // currentPage: _page,
-                          pageChangeCallback: animateToPage,
+                  Consumer<FiltersChangeNotifier>(
+                    builder: (context, fcn, __) => AnimatedBuilder(
+                      animation: _filterSheetAnimation,
+                      child: ChangeNotifierProvider(
+                        create: (context) => FiltersChangeNotifier(),
+                        child: Container(
+                          alignment: Alignment.center,
+                          color: Color(0xff164A6D),
+                          child: FilterPageViewIndicator(
+                            scrollController: _scrollController,
+                            currentPage: fcn.currentPage,
+                            pageChangeCallback: animateToPage,
+                          ),
                         ),
                       ),
-                    ),
-                    builder: (context, child) => Positioned(
-                      top: (1 - _filterSheetAnimation.value) * 64 + 0,
-                      left: 0,
-                      right: 0,
-                      bottom: constraints.maxHeight -
-                          64 -
-                          ((1 - _filterSheetAnimation.value) * 86),
-                      child: IgnorePointer(
-                        ignoring:
-                            _filterSheetAnimation.value == 0 ? true : false,
-                        child: Opacity(
-                          opacity: _filterSheetAnimation.value == 0 ? 0.0 : 1.0,
-                          child: child,
+                      builder: (context, child) => Positioned(
+                        top: (1 - _filterSheetAnimation.value) * 64 + 0,
+                        left: 0,
+                        right: 0,
+                        bottom: constraints.maxHeight -
+                            64 -
+                            ((1 - _filterSheetAnimation.value) * 86),
+                        child: IgnorePointer(
+                          ignoring:
+                              _filterSheetAnimation.value == 0 ? true : false,
+                          child: Opacity(
+                            opacity: _filterSheetAnimation.value == 0 ? 0.0 : 1.0,
+                            child: child,
+                          ),
                         ),
                       ),
                     ),
