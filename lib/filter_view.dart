@@ -4,7 +4,7 @@ import 'package:fab_filter/line.dart';
 import 'package:flutter/material.dart';
 
 class FilterView extends StatefulWidget {
-  Filter1ChangeNotifier fcn;
+  final Filter1ChangeNotifier fcn;
   // final FiltersChangeNotifier filtersChangeNotifier;
   final int position;
 

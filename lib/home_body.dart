@@ -1,4 +1,5 @@
 import 'package:fab_filter/change_notifier/filter1_change_notifier.dart';
+import 'package:fab_filter/util/enum.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'change_notifier/filter2_change_notifier.dart';
@@ -345,17 +346,23 @@ class _HomeBodyState extends State<HomeBody>
                                   itemCount:
                                       filtersChangeNotifier.filters.length,
                                   itemBuilder: (context, position) {
-                                    return filtersChangeNotifier.filters.elementAt(position).runtimeType == Filter2ChangeNotifier
+                                    return filtersChangeNotifier.filters
+                                                .elementAt(position)
+                                                .runtimeType ==
+                                            Filter2ChangeNotifier
                                         ? ChangeNotifierProvider.value(
                                             value: filtersChangeNotifier
                                                     .filters[position]
                                                 as Filter2ChangeNotifier,
-                                            child: Consumer<Filter2ChangeNotifier>(
-                                              builder: (context, fcn, __) => FilterView2(
+                                            child:
+                                                Consumer<Filter2ChangeNotifier>(
+                                              builder: (context, fcn, __) =>
+                                                  FilterView2(
+                                                fcn: fcn,
                                                 // key: ValueKey(
-                                                  // filtersChangeNotifier
-                                                  //         .filters[position]
-                                                  //     ["status"],
+                                                // filtersChangeNotifier
+                                                //         .filters[position]
+                                                //     ["status"],
                                                 // ),
                                               ),
                                             ),
@@ -364,10 +371,11 @@ class _HomeBodyState extends State<HomeBody>
                                             value: filtersChangeNotifier
                                                     .filters[position]
                                                 as Filter1ChangeNotifier,
-                                            child: Consumer<Filter1ChangeNotifier>(
-                                              builder: (context, fcn, __) => FilterView(
-                                                fcn:
-                                                    fcn,
+                                            child:
+                                                Consumer<Filter1ChangeNotifier>(
+                                              builder: (context, fcn, __) =>
+                                                  FilterView(
+                                                fcn: fcn,
                                                 position: position,
                                                 // key: ValueKey(
                                                 //   filtersChangeNotifier
@@ -399,9 +407,14 @@ class _HomeBodyState extends State<HomeBody>
                           // Action Icons Background Container
                           AnimatedBuilder(
                             animation: _filterSheetAnimation,
-                            child: Container(
-                              height: 64,
-                              color: Color(0xff33779C),
+                            child: Consumer<FiltersChangeNotifier>(
+                              builder: (context, fcn, _) => AnimatedContainer(
+                                duration: Duration(milliseconds: 200),
+                                height: 64,
+                                color: fcn.mainStatus == FilterStatus.Changed
+                                    ? Theme.of(context).accentColor
+                                    : Color(0xff33779C),
+                              ),
                             ),
                             builder: (context, child) => Positioned(
                               bottom: 0,
@@ -423,7 +436,9 @@ class _HomeBodyState extends State<HomeBody>
                               child: Container(
                                 height: 32,
                                 width: 32,
-                                child: FilterIcon(),
+                                child: Consumer<FiltersChangeNotifier>(
+                                  builder: (context, fcn, __) => FilterIcon(color: fcn.mainStatus == FilterStatus.Changed ? Colors.white : null),
+                                ),
                               ),
                             ),
                             builder: (context, child) => Positioned(
@@ -446,10 +461,12 @@ class _HomeBodyState extends State<HomeBody>
                           // Close Icon
                           AnimatedBuilder(
                             animation: _actionIconTranslateAnimation,
-                            child: Icon(
-                              Icons.close,
-                              size: 28,
-                              color: Color(0xff8EB8C6),
+                            child: Consumer<FiltersChangeNotifier>(
+                              builder: (context, fcn, __) => Icon(
+                                Icons.close,
+                                size: 28,
+                                color: fcn.mainStatus == FilterStatus.Changed ? Colors.white : Color(0xff8EB8C6),
+                              ),
                             ),
                             builder: (context, child) => Positioned(
                               bottom: 16,

@@ -5,10 +5,17 @@ import 'custom_range_slider_painter.dart';
 
 class CustomRangeSlider extends StatefulWidget {
   final double width;
+  final double initialFirstThumbX;
+  final double initialSecondThumbX;
+  final Function(double v1, double v2) onRangeChanged;
 
   CustomRangeSlider({
     @required this.width,
-  }) : assert(width != null);
+    @required this.onRangeChanged,
+    this.initialFirstThumbX,
+    this.initialSecondThumbX,
+  })  : assert(width != null),
+        assert(onRangeChanged != null);
 
   @override
   _CustomRangeSliderState createState() => _CustomRangeSliderState();
@@ -24,8 +31,8 @@ class _CustomRangeSliderState extends State<CustomRangeSlider> {
   @override
   void initState() {
     stateChanged = false;
-    firstThumbStartX = 0;
-    secThumbStartX = widget.width - 48;
+    firstThumbStartX = widget.initialFirstThumbX != null ? widget.initialFirstThumbX - 24 : 0;
+    secThumbStartX = widget.initialSecondThumbX != null ? widget.initialSecondThumbX - 24 : widget.width - 48;
     currentNode = 0;
     super.initState();
   }
@@ -57,25 +64,29 @@ class _CustomRangeSliderState extends State<CustomRangeSlider> {
         },
         onHorizontalDragUpdate: (dragUpdateDetails) {
           var diff = dragUpdateDetails.delta.dx;
-          if (currentNode == 1)
+          if (currentNode == 1) {
             setState(() {
               stateChanged = true;
               firstThumbStartX =
                   (firstThumbStartX + diff).clamp(0.0, secThumbStartX - 48);
             });
-          else if (currentNode == 2)
+            widget.onRangeChanged(firstThumbStartX + 24, secThumbStartX + 24);
+          } else if (currentNode == 2) {
             setState(() {
               stateChanged = true;
               secThumbStartX = (secThumbStartX + diff)
                   .clamp(firstThumbStartX + 48, widget.width - 48);
             });
+            widget.onRangeChanged(firstThumbStartX + 24, secThumbStartX + 24);
+          }
         },
         child: CustomPaint(
           painter: CustomRangeSliderPainter(
             firstThumbX: firstThumbStartX + 24,
             secThumbX: secThumbStartX + 24,
             defaultLineColor: Color(0xff1D668F),
-            progressLineColor: stateChanged ? Color(0xff359DBA) : Color(0xff1D668F),
+            progressLineColor:
+                stateChanged ? Color(0xff359DBA) : Color(0xff1D668F),
             thumbColor: stateChanged ? Color(0xff52D1E2) : Color(0xff297295),
           ),
         ),

@@ -4,20 +4,29 @@ import 'package:flutter/material.dart';
 
 class Filter1ChangeNotifier extends BaseChangeNotifier {
 
-  Filter1ChangeNotifier() {
+  final Function setParentFilterStatus;
+
+  Filter1ChangeNotifier(this.setParentFilterStatus) {
     this.selectedItems = [];
     this.status = FilterStatus.NotChanged;
+  }
+
+  customNotifyListeners() {
+    setParentFilterStatus(FilterStatus.Changed);
+    notifyListeners();
   }
 
   selectItem(int index) {
     selectedItems.add(index);
     this.status = FilterStatus.Changed;
-    notifyListeners();
+    customNotifyListeners();
   }
 
   deselectItem(int index) {
     selectedItems.remove(index);
-    this.status = FilterStatus.Changed;
-    notifyListeners();
+    if (selectedItems.length == 0) {
+      this.status = FilterStatus.NotChanged;
+      customNotifyListeners();
+    }
   }
 }

@@ -8,10 +8,11 @@ class FilterPageViewIndicator extends StatefulWidget {
   final double opacity;
   final FilterStatus filterStatus;
 
-  FilterPageViewIndicator({this.fcn, this.opacity, this.filterStatus})
+  FilterPageViewIndicator({Key key, this.fcn, this.opacity, this.filterStatus})
       : assert(opacity != null),
         assert(fcn != null),
-        assert(filterStatus != null);
+        assert(filterStatus != null),
+        super(key: key);
 
   @override
   _FilterPageViewIndicatorState createState() =>
@@ -25,7 +26,8 @@ class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator>
 
   @override
   void didUpdateWidget(covariant FilterPageViewIndicator oldWidget) {
-    print("didUpdateWidget: ${widget.filterStatus} ${widget.fcn.selectedItems}");
+    print(
+        "didUpdateWidget: ${widget.filterStatus} ${widget.fcn.selectedItems}");
     if (widget.filterStatus != oldWidget.filterStatus) {
       if (widget.filterStatus == FilterStatus.Changed)
         markIndicatorWithBadge();
@@ -37,15 +39,14 @@ class _FilterPageViewIndicatorState extends State<FilterPageViewIndicator>
 
   @override
   void initState() {
-    print("indicator initState: ${widget.filterStatus}");
     _controller = AnimationController(
-      duration: Duration(milliseconds: 600),
+      duration: Duration(milliseconds: 200),
       vsync: this,
     );
     _scaleAnimation = CurvedAnimation(
       parent: _controller,
-      curve: Curves.elasticInOut,
-      reverseCurve: Curves.elasticInOut,
+      curve: Curves.easeOutBack,
+      reverseCurve: Curves.easeOutBack,
     );
     if (widget.fcn.status == FilterStatus.Changed)
       _controller.forward();

@@ -1,26 +1,30 @@
 import 'package:fab_filter/change_notifier/filter1_change_notifier.dart';
 import 'package:fab_filter/change_notifier/filter2_change_notifier.dart';
+import 'package:fab_filter/util/enum.dart';
 import 'package:flutter/cupertino.dart';
 
 class FiltersChangeNotifier with ChangeNotifier {
 
+  FilterStatus mainStatus;
   double currentPage;
+  List filters;
 
   FiltersChangeNotifier() {
     this.currentPage = 0.0;
+    this.mainStatus = FilterStatus.NotChanged;
+    this.filters = [
+      Filter1ChangeNotifier(setFilterStatus),
+      Filter1ChangeNotifier(setFilterStatus),
+      Filter2ChangeNotifier(setFilterStatus),
+      Filter1ChangeNotifier(setFilterStatus),
+      Filter1ChangeNotifier(setFilterStatus),
+    ];
   }
 
-  List filters = [
-    Filter1ChangeNotifier(),
-    Filter1ChangeNotifier(),
-    Filter2ChangeNotifier(),
-    Filter1ChangeNotifier(),
-    Filter1ChangeNotifier(),
-  ];
-  // setFilterStatus(int position, FilterStatus status) {
-  //   (filters[position] as Map).update("status", (value) => status);
-  //   notifyListeners();
-  // }
+  setFilterStatus(FilterStatus status) {
+    this.mainStatus = status;
+    notifyListeners();
+  }
   //
   // setSelectedItems(int position, List items) {
   //   filters.elementAt(position)["data"]["items_selected"] = items;

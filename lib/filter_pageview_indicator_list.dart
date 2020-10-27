@@ -66,6 +66,7 @@ class _FilterPageViewIndicatorListState
                   value: filtersChangeNotifier.filters.elementAt(position) as BaseChangeNotifier,
                   child: Consumer<BaseChangeNotifier>(
                     builder: (context, fcn, __) => FilterPageViewIndicator(
+                      // key: ValueKey(position),
                       fcn: fcn,
                       opacity: (1 - (widget.currentPage - position).abs()).clamp(0.2, 1.0),
                       filterStatus: fcn.status,
