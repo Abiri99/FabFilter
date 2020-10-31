@@ -240,10 +240,10 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
           bottom: 0,
           child: LayoutBuilder(
             builder: (context, constraints) {
-              var fabIconMaxY = constraints.maxHeight/2 - 70;
-              var fabIconMaxX = constraints.maxWidth/2 - 36 - 16 - 16;
-              var fabContainerMaxY = constraints.maxHeight/2 - 70;
-              var fabContainerMaxX = constraints.maxWidth/2 - 72;
+              var fabIconMaxY = constraints.maxHeight / 2 - 70;
+              var fabIconMaxX = constraints.maxWidth / 2 - 36 - 16 - 16;
+              var fabContainerMaxY = constraints.maxHeight / 2 - 70;
+              var fabContainerMaxX = constraints.maxWidth / 2 - 72;
               return Container(
                 child: Stack(
                   children: [
@@ -278,10 +278,10 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                               ((1 - _filterSheetAnimation.value) * 86),
                           child: IgnorePointer(
                             ignoring:
-                            _filterSheetAnimation.value == 0 ? true : false,
+                                _filterSheetAnimation.value == 0 ? true : false,
                             child: Opacity(
                               opacity:
-                              _filterSheetAnimation.value == 0 ? 0.0 : 1.0,
+                                  _filterSheetAnimation.value == 0 ? 0.0 : 1.0,
                               child: child,
                             ),
                           ),
@@ -303,7 +303,7 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                               animation: _fabRevealAnimation,
                               builder: (context, child) => Align(
                                 alignment: Alignment(
-                                    (1 - _xAxisPositionAnimation.value),
+                                  (1 - _xAxisPositionAnimation.value),
                                   1 - (_yAxisPositionAnimation.value),
                                 ),
                                 // bottom: (1 - _fabRevealAnimation.value) *
@@ -324,19 +324,24 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                                     animation: _fadeOutAnimation,
                                     child: Container(
                                       height: (_fabRevealAnimation.value) *
-                                          (constraints.maxHeight - topIndicatorListViewHeight) +
-                                          (1 - _fabRevealAnimation.value) * fabWidth,
+                                              (constraints.maxHeight -
+                                                  topIndicatorListViewHeight) +
+                                          (1 - _fabRevealAnimation.value) *
+                                              fabWidth,
                                       width: (_fabRevealAnimation.value) *
-                                          constraints.maxWidth +
-                                          (1 - _fabRevealAnimation.value) * fabWidth,
+                                              constraints.maxWidth +
+                                          (1 - _fabRevealAnimation.value) *
+                                              fabWidth,
                                       margin: EdgeInsets.all(
-                                          (1 - _fabRevealAnimation.value) * fabMargin),
+                                          (1 - _fabRevealAnimation.value) *
+                                              fabMargin),
                                       padding: const EdgeInsets.all(32),
                                       child: Center(
                                         child: SizedBox(),
                                       ),
                                       decoration: BoxDecoration(
-                                        color: Theme.of(context).primaryColorDark,
+                                        color:
+                                            Theme.of(context).primaryColorDark,
                                         borderRadius: BorderRadius.all(
                                           Radius.circular(
                                               (1 - _fabRevealAnimation.value) *
@@ -367,69 +372,69 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                               child: Consumer<FiltersChangeNotifier>(
                                 builder: (_, filtersChangeNotifier, __) =>
                                     AnimatedBuilder(
-                                      animation: _fadeOutAnimation,
-                                      builder: (context, child) => Opacity(
-                                        opacity: 1 - _fadeOutAnimation.value,
-                                        child: child,
-                                      ),
-                                      child: Container(
-                                        child: PageView.builder(
-                                          physics: BouncingScrollPhysics(),
-                                          controller: _pageController,
-                                          itemCount:
+                                  animation: _fadeOutAnimation,
+                                  builder: (context, child) => Opacity(
+                                    opacity: 1 - _fadeOutAnimation.value,
+                                    child: child,
+                                  ),
+                                  child: Container(
+                                    child: PageView.builder(
+                                      physics: BouncingScrollPhysics(),
+                                      controller: _pageController,
+                                      itemCount:
                                           filtersChangeNotifier.filters.length,
-                                          itemBuilder: (context, position) {
-                                            return filtersChangeNotifier.filters
-                                                .elementAt(position)
-                                                .runtimeType ==
+                                      itemBuilder: (context, position) {
+                                        return filtersChangeNotifier.filters
+                                                    .elementAt(position)
+                                                    .runtimeType ==
                                                 Filter2ChangeNotifier
-                                                ? ChangeNotifierProvider.value(
-                                              value: filtersChangeNotifier
-                                                  .filters[position]
-                                              as Filter2ChangeNotifier,
-                                              child: Consumer<
-                                                  Filter2ChangeNotifier>(
-                                                builder: (context, fcn, __) =>
-                                                    FilterView2(
-                                                      fcn: fcn,
-                                                      // key: ValueKey(
-                                                      // filtersChangeNotifier
-                                                      //         .filters[position]
-                                                      //     ["status"],
-                                                      // ),
-                                                    ),
-                                              ),
-                                            )
-                                                : ChangeNotifierProvider.value(
-                                              value: filtersChangeNotifier
-                                                  .filters[position]
-                                              as Filter1ChangeNotifier,
-                                              child: Consumer<
-                                                  Filter1ChangeNotifier>(
-                                                builder: (context, fcn, __) =>
-                                                    FilterView(
-                                                      fcn: fcn,
-                                                      position: position,
-                                                      // key: ValueKey(
-                                                      //   filtersChangeNotifier
-                                                      //           .filters[position]
-                                                      //       ["status"],
-                                                      // ),
-                                                    ),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
+                                            ? ChangeNotifierProvider.value(
+                                                value: filtersChangeNotifier
+                                                        .filters[position]
+                                                    as Filter2ChangeNotifier,
+                                                child: Consumer<
+                                                    Filter2ChangeNotifier>(
+                                                  builder: (context, fcn, __) =>
+                                                      FilterView2(
+                                                    fcn: fcn,
+                                                    // key: ValueKey(
+                                                    // filtersChangeNotifier
+                                                    //         .filters[position]
+                                                    //     ["status"],
+                                                    // ),
+                                                  ),
+                                                ),
+                                              )
+                                            : ChangeNotifierProvider.value(
+                                                value: filtersChangeNotifier
+                                                        .filters[position]
+                                                    as Filter1ChangeNotifier,
+                                                child: Consumer<
+                                                    Filter1ChangeNotifier>(
+                                                  builder: (context, fcn, __) =>
+                                                      FilterView(
+                                                    fcn: fcn,
+                                                    position: position,
+                                                    // key: ValueKey(
+                                                    //   filtersChangeNotifier
+                                                    //           .filters[position]
+                                                    //       ["status"],
+                                                    // ),
+                                                  ),
+                                                ),
+                                              );
+                                      },
                                     ),
+                                  ),
+                                ),
                               ),
                               builder: (context, child) => IgnorePointer(
                                 ignoring: _filterSheetAnimation.value == 1.0
                                     ? false
                                     : true,
                                 child: Transform.translate(
-                                  offset: Offset(
-                                      0, 36 * (1 - _filterSheetAnimation.value)),
+                                  offset: Offset(0,
+                                      36 * (1 - _filterSheetAnimation.value)),
                                   child: FadeTransition(
                                     opacity: _filterSheetAnimation,
                                     child: child,
@@ -464,20 +469,23 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                                   child: IgnorePointer(
                                     ignoring: true,
                                     child: Opacity(
-                                      opacity: 1.0 * _filterSheetAnimation.value,
+                                      opacity:
+                                          1.0 * _filterSheetAnimation.value,
                                       child: Consumer<FiltersChangeNotifier>(
                                         builder: (context, fcn, _) =>
                                             AnimatedContainer(
-                                              duration: Duration(milliseconds: 200),
-                                              height: fabWidth - 8,
-                                              width: constraints.maxWidth *
-                                                  (1 - _fadeOutAnimation.value) +
-                                                  fabWidth - 8,
-                                              color: fcn.mainStatus ==
+                                          duration: Duration(milliseconds: 200),
+                                          height: fabWidth,
+                                          width: constraints.maxWidth *
+                                                  (1 -
+                                                      _fadeOutAnimation.value) +
+                                              fabWidth -
+                                              8,
+                                          color: fcn.mainStatus ==
                                                   FilterStatus.Changed
-                                                  ? Theme.of(context).accentColor
-                                                  : Color(0xff33779C),
-                                            ),
+                                              ? Theme.of(context).accentColor
+                                              : Color(0xff33779C),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -488,17 +496,18 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                             // Filter Icon
                             AnimatedBuilder(
                               animation: _controller,
-                              child: Container(
-                                height: fabIconWidth,
-                                width: fabIconWidth,
-                                child: Consumer<FiltersChangeNotifier>(
-                                  builder: (context, fcn, __) => FilterIcon(
-                                      color:
-                                      fcn.mainStatus == FilterStatus.Changed
-                                          ? Colors.white
-                                          : null),
-                                ),
-                              ),
+                              // child: Container(
+                              //   height: fabWidth,
+                              //   width: fabWidth,
+                              //   margin: EdgeInsets.all(36.0 - 36 * _controller.value),
+                              //   child: Consumer<FiltersChangeNotifier>(
+                              //     builder: (context, fcn, __) => FilterIcon(
+                              //         color:
+                              //             fcn.mainStatus == FilterStatus.Changed
+                              //                 ? Colors.white
+                              //                 : null),
+                              //   ),
+                              // ),
                               builder: (context, child) => AnimatedBuilder(
                                 animation: _fadeOutAnimation,
                                 child: IgnorePointer(
@@ -512,14 +521,35 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                                           AnimationStatus.completed)
                                         _filterController.forward();
                                     },
-                                    child: child,
+                                    child: Container(
+                                      height: fabWidth,
+                                      width: fabWidth,
+                                      margin: EdgeInsets.all(36.0 - 36.0 * _fabRevealAnimation.value),
+                                      child: Consumer<FiltersChangeNotifier>(
+                                        builder: (context, fcn, __) => FilterIcon(
+                                            color:
+                                            fcn.mainStatus == FilterStatus.Changed
+                                                ? Colors.white
+                                                : null),
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 builder: (context, child) => Align(
                                   alignment: Alignment(
-                                    (1 - _xAxisPositionAnimation.value) - 0.3,
-                                    (1 - _yAxisPositionAnimation.value) - 0.3,
+                                    (1 - _xAxisPositionAnimation.value) + (_actionIconTranslateAnimation.value * 0.6),
+                                    (1 - _yAxisPositionAnimation.value) + (_fabRevealAnimation.value),
                                   ),
+                                  // alignment: _xAxisPositionAnimation.status == AnimationStatus.forward ? Alignment(
+                                  //   (1 - _xAxisPositionAnimation.value),
+                                  //   (1 - _yAxisPositionAnimation.value),
+                                  // ) : _fabRevealAnimation.status == AnimationStatus.forward ? Alignment(
+                                  //   0,
+                                  //   _fabRevealAnimation.value,
+                                  // ) : Alignment(
+                                  //   _actionIconTranslateAnimation.value,
+                                  //   1.0,
+                                  // ),
                                   child: child,
                                 ),
                                 // builder: (context, child) => Positioned(
@@ -547,15 +577,21 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                               child: Consumer<FiltersChangeNotifier>(
                                 builder: (context, fcn, __) => Icon(
                                   Icons.close,
-                                  size: 28,
+                                  size: 30,
                                   color: fcn.mainStatus == FilterStatus.Changed
                                       ? Colors.white
                                       : Color(0xff8EB8C6),
                                 ),
                               ),
-                              builder: (context, child) => Positioned(
-                                bottom: 16,
-                                left: _actionIconTranslateAnimation.value * (constraints.maxWidth / 5),
+                              builder: (context, child) => Align(
+                                alignment: Alignment(
+                                  -1.0 + _actionIconTranslateAnimation.value * 0.4,
+                                  1.0,
+                                ),
+                                // bottom: 16,
+                                // left: _actionIconTranslateAnimation.value *
+                                //     (constraints.maxWidth / 5),
+
                                 // left: 16 +
                                 //     (_actionIconTranslateAnimation.value *
                                 //         constraints.maxWidth /
@@ -568,12 +604,13 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                                   child: AnimatedBuilder(
                                     animation: _fadeOutAnimation,
                                     builder: (context, _) => Container(
-                                      height: 32,
-                                      width: 32 - 32 * _fadeOutAnimation.value,
+                                      height: fabWidth,
+                                      width: fabWidth,
+                                      // padding: const EdgeInsets.only(top: 4.0,),
                                       // margin: const EdgeInsets.all(24),
                                       child: Opacity(
-                                        opacity:
-                                        _actionIconTranslateAnimation.value *
+                                        opacity: _actionIconTranslateAnimation
+                                                .value *
                                             (1 - _fadeOutAnimation.value),
                                         child: child,
                                       ),
