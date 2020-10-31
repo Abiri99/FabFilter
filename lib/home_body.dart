@@ -479,12 +479,16 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                                           width: constraints.maxWidth *
                                                   (1 -
                                                       _fadeOutAnimation.value) +
-                                              fabWidth -
-                                              8,
-                                          color: fcn.mainStatus ==
-                                                  FilterStatus.Changed
-                                              ? Theme.of(context).accentColor
-                                              : Color(0xff33779C),
+                                              fabWidth,
+                                          decoration: BoxDecoration(
+                                            color: fcn.mainStatus ==
+                                                    FilterStatus.Changed
+                                                ? Theme.of(context).accentColor
+                                                : Color(0xff33779C),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(100 *
+                                                    _fadeOutAnimation.value)),
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -524,21 +528,28 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                                     child: Container(
                                       height: fabWidth,
                                       width: fabWidth,
-                                      margin: EdgeInsets.all(36.0 - 36.0 * _fabRevealAnimation.value),
+                                      margin: EdgeInsets.all(36.0 -
+                                          36.0 * _fabRevealAnimation.value),
                                       child: Consumer<FiltersChangeNotifier>(
-                                        builder: (context, fcn, __) => FilterIcon(
-                                            color:
-                                            fcn.mainStatus == FilterStatus.Changed
-                                                ? Colors.white
-                                                : null),
+                                        builder: (context, fcn, __) =>
+                                            FilterIcon(
+                                                color: fcn.mainStatus ==
+                                                        FilterStatus.Changed
+                                                    ? Colors.white
+                                                    : null),
                                       ),
                                     ),
                                   ),
                                 ),
                                 builder: (context, child) => Align(
                                   alignment: Alignment(
-                                    (1 - _xAxisPositionAnimation.value) + (_actionIconTranslateAnimation.value * 0.6),
-                                    (1 - _yAxisPositionAnimation.value) + (_fabRevealAnimation.value),
+                                    (1 - _xAxisPositionAnimation.value) +
+                                        (_actionIconTranslateAnimation.value *
+                                            0.6) -
+                                        (_fadeOutAnimation.value * 0.6),
+                                    (1 - _yAxisPositionAnimation.value) +
+                                        (_fabRevealAnimation.value) -
+                                        (_fadeOutAnimation.value),
                                   ),
                                   // alignment: _xAxisPositionAnimation.status == AnimationStatus.forward ? Alignment(
                                   //   (1 - _xAxisPositionAnimation.value),
@@ -550,7 +561,10 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                                   //   _actionIconTranslateAnimation.value,
                                   //   1.0,
                                   // ),
-                                  child: child,
+                                  child: Opacity(
+                                    opacity: 1 - _fadeOutAnimation.value,
+                                    child: child,
+                                  ),
                                 ),
                                 // builder: (context, child) => Positioned(
                                 //   bottom: (1 - _fabIconFallAnimation.value) *
@@ -583,35 +597,36 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                                       : Color(0xff8EB8C6),
                                 ),
                               ),
-                              builder: (context, child) => Align(
-                                alignment: Alignment(
-                                  -1.0 + _actionIconTranslateAnimation.value * 0.4,
-                                  1.0,
-                                ),
-                                // bottom: 16,
-                                // left: _actionIconTranslateAnimation.value *
-                                //     (constraints.maxWidth / 5),
+                              builder: (context, child) => AnimatedBuilder(
+                                animation: _fadeOutAnimation,
+                                builder: (context, _) => Align(
+                                  alignment: Alignment(
+                                    -1.0 +
+                                        (_actionIconTranslateAnimation.value *
+                                            0.4) +
+                                        (0.6 * _fadeOutAnimation.value),
+                                    1.0 - _fadeOutAnimation.value,
+                                  ),
+                                  // bottom: 16,
+                                  // left: _actionIconTranslateAnimation.value *
+                                  //     (constraints.maxWidth / 5),
 
-                                // left: 16 +
-                                //     (_actionIconTranslateAnimation.value *
-                                //         constraints.maxWidth /
-                                //         4) -
-                                //     0,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    _controller.reverse();
-                                  },
-                                  child: AnimatedBuilder(
-                                    animation: _fadeOutAnimation,
-                                    builder: (context, _) => Container(
+                                  // left: 16 +
+                                  //     (_actionIconTranslateAnimation.value *
+                                  //         constraints.maxWidth /
+                                  //         4) -
+                                  //     0,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      _controller.reverse();
+                                    },
+                                    child: Container(
                                       height: fabWidth,
                                       width: fabWidth,
                                       // padding: const EdgeInsets.only(top: 4.0,),
                                       // margin: const EdgeInsets.all(24),
                                       child: Opacity(
-                                        opacity: _actionIconTranslateAnimation
-                                                .value *
-                                            (1 - _fadeOutAnimation.value),
+                                        opacity: _actionIconTranslateAnimation.value,
                                         child: child,
                                       ),
                                     ),
