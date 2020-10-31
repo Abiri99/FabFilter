@@ -301,13 +301,17 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                             // Fab background
                             AnimatedBuilder(
                               animation: _fabRevealAnimation,
-                              builder: (context, child) => Positioned(
-                                bottom: (1 - _fabRevealAnimation.value) *
-                                    (_yAxisPositionAnimation.value *
-                                        (fabContainerMaxY)),
-                                right: (1 - _fabRevealAnimation.value) *
-                                    (_xAxisPositionAnimation.value *
-                                        (fabContainerMaxX)),
+                              builder: (context, child) => Align(
+                                alignment: Alignment(
+                                    (1 - _xAxisPositionAnimation.value),
+                                  1 - (_yAxisPositionAnimation.value),
+                                ),
+                                // bottom: (1 - _fabRevealAnimation.value) *
+                                //     (_yAxisPositionAnimation.value *
+                                //         (fabContainerMaxY)),
+                                // right: (1 - _fabRevealAnimation.value) *
+                                //     (_xAxisPositionAnimation.value *
+                                //         (fabContainerMaxX)),
                                 child: GestureDetector(
                                   onTap: () {
                                     if (_controller.status ==
@@ -449,10 +453,14 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                               // ),
                               builder: (context, child) => AnimatedBuilder(
                                 animation: _fadeOutAnimation,
-                                builder: (context, child) => Positioned(
-                                  bottom: 0 + _fadeOutAnimation.value * fabIconMaxY,
-                                  right: 0,
-                                  left: 0,
+                                builder: (context, child) => Align(
+                                  alignment: Alignment(
+                                    0,
+                                    1 - _fadeOutAnimation.value,
+                                  ),
+                                  // bottom: 0 + _fadeOutAnimation.value * fabIconMaxY,
+                                  // right: 0,
+                                  // left: 0,
                                   child: IgnorePointer(
                                     ignoring: true,
                                     child: Opacity(
@@ -507,23 +515,29 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                                     child: child,
                                   ),
                                 ),
-                                builder: (context, child) => Positioned(
-                                  bottom: (1 - _fabIconFallAnimation.value) *
-                                      (_yAxisPositionAnimation.value *
-                                          (fabIconMaxY)) +
-                                      16 +
-                                      (1 - _fabIconFallAnimation.value) * 40 +
-                                      _fadeOutAnimation.value *
-                                          (fabIconMaxY),
-                                  // right: fabMaxX,
-                                  right: (_xAxisPositionAnimation.value *
-                                      (fabIconMaxX)) -
-                                      (_actionIconTranslateAnimation.value *
-                                          constraints.maxWidth /
-                                          4) +
-                                      _fadeOutAnimation.value * fabIconMaxX + 36 + 36 - 16,
+                                builder: (context, child) => Align(
+                                  alignment: Alignment(
+                                    (1 - _xAxisPositionAnimation.value) - 0.3,
+                                    (1 - _yAxisPositionAnimation.value) - 0.3,
+                                  ),
                                   child: child,
                                 ),
+                                // builder: (context, child) => Positioned(
+                                //   bottom: (1 - _fabIconFallAnimation.value) *
+                                //       (_yAxisPositionAnimation.value *
+                                //           (fabIconMaxY)) +
+                                //       16 +
+                                //       (1 - _fabIconFallAnimation.value) * 40 +
+                                //       _fadeOutAnimation.value *
+                                //           (fabIconMaxY),
+                                //   right: (_xAxisPositionAnimation.value *
+                                //       (fabIconMaxX)) -
+                                //       (_actionIconTranslateAnimation.value *
+                                //           constraints.maxWidth /
+                                //           4) +
+                                //       _fadeOutAnimation.value * fabIconMaxX + 36 + 36 - 16,
+                                //   child: child,
+                                // ),
                               ),
                             ),
 
