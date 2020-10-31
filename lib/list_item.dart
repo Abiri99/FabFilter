@@ -140,7 +140,7 @@ class _ListItemState extends State<ListItem>
                     ),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
-                      vertical: 24,
+                      vertical: 28,
                     ),
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,

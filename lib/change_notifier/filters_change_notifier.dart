@@ -25,13 +25,13 @@ class FiltersChangeNotifier with ChangeNotifier {
     this.mainStatus = status;
     notifyListeners();
   }
-  //
+
   // setSelectedItems(int position, List items) {
   //   filters.elementAt(position)["data"]["items_selected"] = items;
   //   filters.elementAt(position)["data"]["status"] = FilterStatus.Changed;
   //   notifyListeners();
   // }
-  //
+
   setCurrentPage(double value) {
     this.currentPage = value;
     notifyListeners();

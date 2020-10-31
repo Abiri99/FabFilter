@@ -214,7 +214,7 @@ class _HomeBodyState extends State<HomeBody>
                                 margin: EdgeInsets.symmetric(
                                   horizontal: 12,
                                   vertical:
-                                      (1 - _scaleAnimation.value) * -40 + 8,
+                                      (1 - _scaleAnimation.value) * -40 + 10,
                                 ),
                                 child: child,
                               ),
@@ -271,7 +271,6 @@ class _HomeBodyState extends State<HomeBody>
                     ),
                   ),
 
-                  // Fab Background
                   Positioned(
                     top: 64,
                     right: 0,
@@ -291,7 +290,7 @@ class _HomeBodyState extends State<HomeBody>
                               right: (1 - _fabRevealAnimation.value) *
                                   (_xAxisPositionAnimation.value *
                                       (MediaQuery.of(context).size.width / 2 -
-                                          56)),
+                                          72)),
                               child: GestureDetector(
                                 onTap: () {
                                   if (_controller.status ==
@@ -303,12 +302,12 @@ class _HomeBodyState extends State<HomeBody>
                                 child: Container(
                                   height: (_fabRevealAnimation.value) *
                                           (constraints.maxHeight - 64) +
-                                      (1 - _fabRevealAnimation.value) * 64,
+                                      (1 - _fabRevealAnimation.value) * 72,
                                   width: (_fabRevealAnimation.value) *
                                           constraints.maxWidth +
-                                      (1 - _fabRevealAnimation.value) * 64,
+                                      (1 - _fabRevealAnimation.value) * 72,
                                   margin: EdgeInsets.all(
-                                      (1 - _fabRevealAnimation.value) * 24),
+                                      (1 - _fabRevealAnimation.value) * 36),
                                   padding: const EdgeInsets.all(32),
                                   child: Center(
                                     child: SizedBox(),
@@ -432,12 +431,19 @@ class _HomeBodyState extends State<HomeBody>
                           // Filter Icon
                           AnimatedBuilder(
                             animation: _controller,
-                            child: IgnorePointer(
+                            child: GestureDetector(
+                              onTap: () {
+
+                              },
                               child: Container(
                                 height: 32,
                                 width: 32,
                                 child: Consumer<FiltersChangeNotifier>(
-                                  builder: (context, fcn, __) => FilterIcon(color: fcn.mainStatus == FilterStatus.Changed ? Colors.white : null),
+                                  builder: (context, fcn, __) => FilterIcon(
+                                      color:
+                                          fcn.mainStatus == FilterStatus.Changed
+                                              ? Colors.white
+                                              : null),
                                 ),
                               ),
                             ),
@@ -446,14 +452,14 @@ class _HomeBodyState extends State<HomeBody>
                                       (_yAxisPositionAnimation.value *
                                           (constraints.maxHeight / 2 - 70)) +
                                   16 +
-                                  (1 - _fabIconFallAnimation.value) * 24,
+                                  (1 - _fabIconFallAnimation.value) * 40,
                               right: (_xAxisPositionAnimation.value *
                                       (MediaQuery.of(context).size.width / 2 -
-                                          56)) -
+                                          72)) -
                                   (_actionIconTranslateAnimation.value *
                                       constraints.maxWidth /
                                       4) +
-                                  40,
+                                  56,
                               child: child,
                             ),
                           ),
@@ -465,7 +471,9 @@ class _HomeBodyState extends State<HomeBody>
                               builder: (context, fcn, __) => Icon(
                                 Icons.close,
                                 size: 28,
-                                color: fcn.mainStatus == FilterStatus.Changed ? Colors.white : Color(0xff8EB8C6),
+                                color: fcn.mainStatus == FilterStatus.Changed
+                                    ? Colors.white
+                                    : Color(0xff8EB8C6),
                               ),
                             ),
                             builder: (context, child) => Positioned(
