@@ -22,8 +22,7 @@ class HomeBody extends StatefulWidget {
   _HomeBodyState createState() => _HomeBodyState();
 }
 
-class _HomeBodyState extends State<HomeBody>
-    with SingleTickerProviderStateMixin {
+class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
   AnimationController _controller;
 
   Animation<double> _listViewAnimation;
@@ -37,6 +36,9 @@ class _HomeBodyState extends State<HomeBody>
   Animation<double> _fabIconFallAnimation;
   Animation<double> _actionIconTranslateAnimation;
   Animation<double> _filterSheetAnimation;
+
+  AnimationController _filterController;
+  Animation<double> _fadeOutAnimation;
 
   ScrollController _scrollController;
   PageController _pageController;
@@ -72,23 +74,13 @@ class _HomeBodyState extends State<HomeBody>
   void initState() {
     _scrollController = ScrollController();
     _pageController = PageController(initialPage: 0);
-    // _page = 0;
     _currentPage = 0;
-
-    // _scrollController.addListener(() {
-    //   _pageController.animateToPage((_scrollController.offset / 116).toInt(), duration: Duration(milliseconds: 200), curve: Curves.easeInOut,);
-    // });
-
-    // _scrollController.attach(_pageController.position);
-    // _pageController.attach(_scrollController.position);
-
-    // _pageController.addListener(() {
-    //   print("page: ${_pageController.page}");
-    //   setState(() {
-    //     _page = _pageController.page;
-    //   });
-    // });
     _controller = AnimationController(
+      duration: widget.duration,
+      reverseDuration: widget.duration,
+      vsync: this,
+    );
+    _filterController = AnimationController(
       duration: widget.duration,
       reverseDuration: widget.duration,
       vsync: this,
@@ -152,12 +144,21 @@ class _HomeBodyState extends State<HomeBody>
         curve: Curves.easeOut,
       ),
     );
+    _fadeOutAnimation = CurvedAnimation(
+      parent: _filterController,
+      curve: Interval(
+        0.0,
+        0.2,
+        curve: Curves.easeOut,
+      ),
+    );
     super.initState();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _filterController.dispose();
     _scrollController.dispose();
     _pageController.dispose();
     super.dispose();
@@ -181,6 +182,11 @@ class _HomeBodyState extends State<HomeBody>
 
   @override
   Widget build(BuildContext context) {
+    const bottomSheetHeight = 380;
+    const topIndicatorListViewHeight = 60.0;
+    const fabWidth = 72.0;
+    const fabMargin = 36.0;
+    const fabIconWidth = 32.0;
     // WidgetsBinding.instance.addPostFrameCallback((_) => registerPageListener());
     var mq = MediaQuery.of(context);
     return Stack(
@@ -226,287 +232,350 @@ class _HomeBodyState extends State<HomeBody>
             ),
           ],
         ),
+        // Bottom Sheet
         Positioned(
-          top: mq.size.height - 380,
+          top: mq.size.height - bottomSheetHeight - topIndicatorListViewHeight,
           right: 0,
           left: 0,
           bottom: 0,
           child: LayoutBuilder(
-            builder: (context, constraints) => Container(
-              child: Stack(
-                children: [
-                  // PageView Indicators
-                  Consumer<FiltersChangeNotifier>(
-                    builder: (context, fcn, __) => AnimatedBuilder(
-                      animation: _filterSheetAnimation,
-                      child: ChangeNotifierProvider.value(
-                        value: fcn,
-                        child: Container(
-                          alignment: Alignment.center,
-                          color: Color(0xff164A6D),
-                          child: FilterPageViewIndicatorList(
-                            scrollController: _scrollController,
-                            currentPage: fcn.currentPage,
-                            pageChangeCallback: animateToPage,
+            builder: (context, constraints) {
+              var fabIconMaxY = constraints.maxHeight/2 - 70;
+              var fabIconMaxX = constraints.maxWidth/2 - 36 - 16 - 16;
+              var fabContainerMaxY = constraints.maxHeight/2 - 70;
+              var fabContainerMaxX = constraints.maxWidth/2 - 72;
+              return Container(
+                child: Stack(
+                  children: [
+                    // PageView Indicators
+                    Consumer<FiltersChangeNotifier>(
+                      builder: (context, fcn, __) => AnimatedBuilder(
+                        animation: _filterSheetAnimation,
+                        child: ChangeNotifierProvider.value(
+                          value: fcn,
+                          child: AnimatedBuilder(
+                            animation: _fadeOutAnimation,
+                            builder: (context, child) => Opacity(
+                              opacity: 1 - _fadeOutAnimation.value,
+                              child: Container(
+                                alignment: Alignment.center,
+                                color: Color(0xff164A6D),
+                                child: FilterPageViewIndicatorList(
+                                  scrollController: _scrollController,
+                                  currentPage: fcn.currentPage,
+                                  pageChangeCallback: animateToPage,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      builder: (context, child) => Positioned(
-                        top: (1 - _filterSheetAnimation.value) * 64 + 0,
-                        left: 0,
-                        right: 0,
-                        bottom: constraints.maxHeight -
-                            64 -
-                            ((1 - _filterSheetAnimation.value) * 86),
-                        child: IgnorePointer(
-                          ignoring:
-                              _filterSheetAnimation.value == 0 ? true : false,
-                          child: Opacity(
-                            opacity:
-                                _filterSheetAnimation.value == 0 ? 0.0 : 1.0,
-                            child: child,
+                        builder: (context, child) => Positioned(
+                          top: (1 - _filterSheetAnimation.value) * 64 + 0,
+                          left: 0,
+                          right: 0,
+                          bottom: constraints.maxHeight -
+                              64 -
+                              ((1 - _filterSheetAnimation.value) * 86),
+                          child: IgnorePointer(
+                            ignoring:
+                            _filterSheetAnimation.value == 0 ? true : false,
+                            child: Opacity(
+                              opacity:
+                              _filterSheetAnimation.value == 0 ? 0.0 : 1.0,
+                              child: child,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
 
-                  Positioned(
-                    top: 64,
-                    right: 0,
-                    left: 0,
-                    bottom: 0,
-                    child: Container(
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          // Fab background
-                          AnimatedBuilder(
-                            animation: _fabRevealAnimation,
-                            builder: (context, child) => Positioned(
-                              bottom: (1 - _fabRevealAnimation.value) *
-                                  (_yAxisPositionAnimation.value *
-                                      (constraints.maxHeight / 2 - 70)),
-                              right: (1 - _fabRevealAnimation.value) *
-                                  (_xAxisPositionAnimation.value *
-                                      (MediaQuery.of(context).size.width / 2 -
-                                          72)),
-                              child: GestureDetector(
-                                onTap: () {
-                                  if (_controller.status ==
-                                      AnimationStatus.completed)
-                                    _controller.reverse();
-                                  else
-                                    _controller.forward();
-                                },
-                                child: Container(
-                                  height: (_fabRevealAnimation.value) *
-                                          (constraints.maxHeight - 64) +
-                                      (1 - _fabRevealAnimation.value) * 72,
-                                  width: (_fabRevealAnimation.value) *
+                    Positioned(
+                      top: topIndicatorListViewHeight,
+                      right: 0,
+                      left: 0,
+                      bottom: 0,
+                      child: Container(
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            // Fab background
+                            AnimatedBuilder(
+                              animation: _fabRevealAnimation,
+                              builder: (context, child) => Positioned(
+                                bottom: (1 - _fabRevealAnimation.value) *
+                                    (_yAxisPositionAnimation.value *
+                                        (fabContainerMaxY)),
+                                right: (1 - _fabRevealAnimation.value) *
+                                    (_xAxisPositionAnimation.value *
+                                        (fabContainerMaxX)),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    if (_controller.status ==
+                                        AnimationStatus.completed)
+                                      _controller.reverse();
+                                    else
+                                      _controller.forward();
+                                  },
+                                  child: AnimatedBuilder(
+                                    animation: _fadeOutAnimation,
+                                    child: Container(
+                                      height: (_fabRevealAnimation.value) *
+                                          (constraints.maxHeight - topIndicatorListViewHeight) +
+                                          (1 - _fabRevealAnimation.value) * fabWidth,
+                                      width: (_fabRevealAnimation.value) *
                                           constraints.maxWidth +
-                                      (1 - _fabRevealAnimation.value) * 72,
-                                  margin: EdgeInsets.all(
-                                      (1 - _fabRevealAnimation.value) * 36),
-                                  padding: const EdgeInsets.all(32),
-                                  child: Center(
-                                    child: SizedBox(),
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).primaryColorDark,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(
-                                          (1 - _fabRevealAnimation.value) *
-                                              500),
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black26,
-                                        offset: Offset(0, 15),
-                                        blurRadius: 15,
-                                        spreadRadius: -8,
+                                          (1 - _fabRevealAnimation.value) * fabWidth,
+                                      margin: EdgeInsets.all(
+                                          (1 - _fabRevealAnimation.value) * fabMargin),
+                                      padding: const EdgeInsets.all(32),
+                                      child: Center(
+                                        child: SizedBox(),
                                       ),
-                                    ],
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).primaryColorDark,
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(
+                                              (1 - _fabRevealAnimation.value) *
+                                                  500),
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black26,
+                                            offset: Offset(0, 15),
+                                            blurRadius: 15,
+                                            spreadRadius: -8,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    builder: (context, child) => Opacity(
+                                      opacity: 1 - _fadeOutAnimation.value,
+                                      child: child,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
 
-                          // Filter PageView
-                          AnimatedBuilder(
-                            animation: _filterSheetAnimation,
-                            child: Consumer<FiltersChangeNotifier>(
-                              builder: (_, filtersChangeNotifier, __) =>
-                                  Container(
-                                child: PageView.builder(
-                                  physics: BouncingScrollPhysics(),
-                                  controller: _pageController,
-                                  itemCount:
-                                      filtersChangeNotifier.filters.length,
-                                  itemBuilder: (context, position) {
-                                    return filtersChangeNotifier.filters
+                            // Filter PageView
+                            AnimatedBuilder(
+                              animation: _filterSheetAnimation,
+                              child: Consumer<FiltersChangeNotifier>(
+                                builder: (_, filtersChangeNotifier, __) =>
+                                    AnimatedBuilder(
+                                      animation: _fadeOutAnimation,
+                                      builder: (context, child) => Opacity(
+                                        opacity: 1 - _fadeOutAnimation.value,
+                                        child: child,
+                                      ),
+                                      child: Container(
+                                        child: PageView.builder(
+                                          physics: BouncingScrollPhysics(),
+                                          controller: _pageController,
+                                          itemCount:
+                                          filtersChangeNotifier.filters.length,
+                                          itemBuilder: (context, position) {
+                                            return filtersChangeNotifier.filters
                                                 .elementAt(position)
                                                 .runtimeType ==
-                                            Filter2ChangeNotifier
-                                        ? ChangeNotifierProvider.value(
-                                            value: filtersChangeNotifier
-                                                    .filters[position]
-                                                as Filter2ChangeNotifier,
-                                            child:
-                                                Consumer<Filter2ChangeNotifier>(
-                                              builder: (context, fcn, __) =>
-                                                  FilterView2(
-                                                fcn: fcn,
-                                                // key: ValueKey(
-                                                // filtersChangeNotifier
-                                                //         .filters[position]
-                                                //     ["status"],
-                                                // ),
+                                                Filter2ChangeNotifier
+                                                ? ChangeNotifierProvider.value(
+                                              value: filtersChangeNotifier
+                                                  .filters[position]
+                                              as Filter2ChangeNotifier,
+                                              child: Consumer<
+                                                  Filter2ChangeNotifier>(
+                                                builder: (context, fcn, __) =>
+                                                    FilterView2(
+                                                      fcn: fcn,
+                                                      // key: ValueKey(
+                                                      // filtersChangeNotifier
+                                                      //         .filters[position]
+                                                      //     ["status"],
+                                                      // ),
+                                                    ),
                                               ),
-                                            ),
-                                          )
-                                        : ChangeNotifierProvider.value(
-                                            value: filtersChangeNotifier
-                                                    .filters[position]
-                                                as Filter1ChangeNotifier,
-                                            child:
-                                                Consumer<Filter1ChangeNotifier>(
-                                              builder: (context, fcn, __) =>
-                                                  FilterView(
-                                                fcn: fcn,
-                                                position: position,
-                                                // key: ValueKey(
-                                                //   filtersChangeNotifier
-                                                //           .filters[position]
-                                                //       ["status"],
-                                                // ),
+                                            )
+                                                : ChangeNotifierProvider.value(
+                                              value: filtersChangeNotifier
+                                                  .filters[position]
+                                              as Filter1ChangeNotifier,
+                                              child: Consumer<
+                                                  Filter1ChangeNotifier>(
+                                                builder: (context, fcn, __) =>
+                                                    FilterView(
+                                                      fcn: fcn,
+                                                      position: position,
+                                                      // key: ValueKey(
+                                                      //   filtersChangeNotifier
+                                                      //           .filters[position]
+                                                      //       ["status"],
+                                                      // ),
+                                                    ),
                                               ),
-                                            ),
-                                          );
-                                  },
-                                ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
                               ),
-                            ),
-                            builder: (context, child) => IgnorePointer(
-                              ignoring: _filterSheetAnimation.value == 1.0
-                                  ? false
-                                  : true,
-                              child: Transform.translate(
-                                offset: Offset(
-                                    0, 36 * (1 - _filterSheetAnimation.value)),
-                                child: FadeTransition(
-                                  opacity: _filterSheetAnimation,
-                                  child: child,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          // Action Icons Background Container
-                          AnimatedBuilder(
-                            animation: _filterSheetAnimation,
-                            child: Consumer<FiltersChangeNotifier>(
-                              builder: (context, fcn, _) => AnimatedContainer(
-                                duration: Duration(milliseconds: 200),
-                                height: 64,
-                                color: fcn.mainStatus == FilterStatus.Changed
-                                    ? Theme.of(context).accentColor
-                                    : Color(0xff33779C),
-                              ),
-                            ),
-                            builder: (context, child) => Positioned(
-                              bottom: 0,
-                              right: 0,
-                              left: 0,
-                              child: IgnorePointer(
-                                child: Opacity(
-                                  opacity: 1.0 * _filterSheetAnimation.value,
-                                  child: child,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          // Filter Icon
-                          AnimatedBuilder(
-                            animation: _controller,
-                            child: GestureDetector(
-                              onTap: () {
-
-                              },
-                              child: Container(
-                                height: 32,
-                                width: 32,
-                                child: Consumer<FiltersChangeNotifier>(
-                                  builder: (context, fcn, __) => FilterIcon(
-                                      color:
-                                          fcn.mainStatus == FilterStatus.Changed
-                                              ? Colors.white
-                                              : null),
-                                ),
-                              ),
-                            ),
-                            builder: (context, child) => Positioned(
-                              bottom: (1 - _fabIconFallAnimation.value) *
-                                      (_yAxisPositionAnimation.value *
-                                          (constraints.maxHeight / 2 - 70)) +
-                                  16 +
-                                  (1 - _fabIconFallAnimation.value) * 40,
-                              right: (_xAxisPositionAnimation.value *
-                                      (MediaQuery.of(context).size.width / 2 -
-                                          72)) -
-                                  (_actionIconTranslateAnimation.value *
-                                      constraints.maxWidth /
-                                      4) +
-                                  56,
-                              child: child,
-                            ),
-                          ),
-
-                          // Close Icon
-                          AnimatedBuilder(
-                            animation: _actionIconTranslateAnimation,
-                            child: Consumer<FiltersChangeNotifier>(
-                              builder: (context, fcn, __) => Icon(
-                                Icons.close,
-                                size: 28,
-                                color: fcn.mainStatus == FilterStatus.Changed
-                                    ? Colors.white
-                                    : Color(0xff8EB8C6),
-                              ),
-                            ),
-                            builder: (context, child) => Positioned(
-                              bottom: 16,
-                              left: 16 +
-                                  (_actionIconTranslateAnimation.value *
-                                      constraints.maxWidth /
-                                      4) -
-                                  40,
-                              child: GestureDetector(
-                                onTap: () {
-                                  _controller.reverse();
-                                },
-                                child: Container(
-                                  height: 32,
-                                  width: 32,
-                                  // margin: const EdgeInsets.all(24),
-                                  child: Opacity(
-                                    opacity:
-                                        _actionIconTranslateAnimation.value,
+                              builder: (context, child) => IgnorePointer(
+                                ignoring: _filterSheetAnimation.value == 1.0
+                                    ? false
+                                    : true,
+                                child: Transform.translate(
+                                  offset: Offset(
+                                      0, 36 * (1 - _filterSheetAnimation.value)),
+                                  child: FadeTransition(
+                                    opacity: _filterSheetAnimation,
                                     child: child,
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+
+                            // Action Icons Background Container
+                            AnimatedBuilder(
+                              animation: _filterSheetAnimation,
+                              // child: Consumer<FiltersChangeNotifier>(
+                              //   builder: (context, fcn, _) => AnimatedContainer(
+                              //     duration: Duration(milliseconds: 200),
+                              //     height: 64,
+                              //     width: constraints.maxWidth * (1 - _fadeOutAnimation.value) + 64,
+                              //     color: fcn.mainStatus == FilterStatus.Changed
+                              //         ? Theme.of(context).accentColor
+                              //         : Color(0xff33779C),
+                              //   ),
+                              // ),
+                              builder: (context, child) => AnimatedBuilder(
+                                animation: _fadeOutAnimation,
+                                builder: (context, child) => Positioned(
+                                  bottom: 0 + _fadeOutAnimation.value * fabIconMaxY,
+                                  right: 0,
+                                  left: 0,
+                                  child: IgnorePointer(
+                                    ignoring: true,
+                                    child: Opacity(
+                                      opacity: 1.0 * _filterSheetAnimation.value,
+                                      child: Consumer<FiltersChangeNotifier>(
+                                        builder: (context, fcn, _) =>
+                                            AnimatedContainer(
+                                              duration: Duration(milliseconds: 200),
+                                              height: fabWidth - 8,
+                                              width: constraints.maxWidth *
+                                                  (1 - _fadeOutAnimation.value) +
+                                                  fabWidth - 8,
+                                              color: fcn.mainStatus ==
+                                                  FilterStatus.Changed
+                                                  ? Theme.of(context).accentColor
+                                                  : Color(0xff33779C),
+                                            ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            // Filter Icon
+                            AnimatedBuilder(
+                              animation: _controller,
+                              child: Container(
+                                height: fabIconWidth,
+                                width: fabIconWidth,
+                                child: Consumer<FiltersChangeNotifier>(
+                                  builder: (context, fcn, __) => FilterIcon(
+                                      color:
+                                      fcn.mainStatus == FilterStatus.Changed
+                                          ? Colors.white
+                                          : null),
+                                ),
+                              ),
+                              builder: (context, child) => AnimatedBuilder(
+                                animation: _fadeOutAnimation,
+                                child: IgnorePointer(
+                                  ignoring: _controller.status !=
+                                      AnimationStatus.completed,
+                                  child: GestureDetector(
+                                    behavior: HitTestBehavior.opaque,
+                                    // behavior: _controller.status == AnimationStatus.completed ? HitTestBehavior.opaque : HitTestBehavior.deferToChild,
+                                    onTap: () {
+                                      if (_controller.status ==
+                                          AnimationStatus.completed)
+                                        _filterController.forward();
+                                    },
+                                    child: child,
+                                  ),
+                                ),
+                                builder: (context, child) => Positioned(
+                                  bottom: (1 - _fabIconFallAnimation.value) *
+                                      (_yAxisPositionAnimation.value *
+                                          (fabIconMaxY)) +
+                                      16 +
+                                      (1 - _fabIconFallAnimation.value) * 40 +
+                                      _fadeOutAnimation.value *
+                                          (fabIconMaxY),
+                                  // right: fabMaxX,
+                                  right: (_xAxisPositionAnimation.value *
+                                      (fabIconMaxX)) -
+                                      (_actionIconTranslateAnimation.value *
+                                          constraints.maxWidth /
+                                          4) +
+                                      _fadeOutAnimation.value * fabIconMaxX + 36 + 36 - 16,
+                                  child: child,
+                                ),
+                              ),
+                            ),
+
+                            // Close Icon
+                            AnimatedBuilder(
+                              animation: _actionIconTranslateAnimation,
+                              child: Consumer<FiltersChangeNotifier>(
+                                builder: (context, fcn, __) => Icon(
+                                  Icons.close,
+                                  size: 28,
+                                  color: fcn.mainStatus == FilterStatus.Changed
+                                      ? Colors.white
+                                      : Color(0xff8EB8C6),
+                                ),
+                              ),
+                              builder: (context, child) => Positioned(
+                                bottom: 16,
+                                left: _actionIconTranslateAnimation.value * (constraints.maxWidth / 5),
+                                // left: 16 +
+                                //     (_actionIconTranslateAnimation.value *
+                                //         constraints.maxWidth /
+                                //         4) -
+                                //     0,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _controller.reverse();
+                                  },
+                                  child: AnimatedBuilder(
+                                    animation: _fadeOutAnimation,
+                                    builder: (context, _) => Container(
+                                      height: 32,
+                                      width: 32 - 32 * _fadeOutAnimation.value,
+                                      // margin: const EdgeInsets.all(24),
+                                      child: Opacity(
+                                        opacity:
+                                        _actionIconTranslateAnimation.value *
+                                            (1 - _fadeOutAnimation.value),
+                                        child: child,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
+                  ],
+                ),
+              );
+            },
           ),
         ),
       ],
