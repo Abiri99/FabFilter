@@ -39,6 +39,9 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
 
   AnimationController _filterController;
   Animation<double> _fadeOutAnimation;
+  Animation<double> _fabWrapperSizeAnimation;
+  Animation<double> _fabRotateAnimation;
+  Animation<double> _fabReplaceAnimation;
 
   ScrollController _scrollController;
   PageController _pageController;
@@ -81,7 +84,7 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
       vsync: this,
     );
     _filterController = AnimationController(
-      duration: widget.duration,
+      duration: Duration(milliseconds: widget.duration.inMilliseconds * 3),
       reverseDuration: widget.duration,
       vsync: this,
     );
@@ -148,10 +151,30 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
       parent: _filterController,
       curve: Interval(
         0.0,
-        0.2,
+        0.25,
         curve: Curves.easeOut,
       ),
     );
+    _fabWrapperSizeAnimation = CurvedAnimation(
+      parent: _filterController,
+      curve: Interval(
+        0.0,
+        0.25,
+        curve: Curves.elasticIn,
+      ),
+    );
+    _fabRotateAnimation = CurvedAnimation(
+      parent: _filterController,
+      curve: Interval(
+        0.3,
+        0.6,
+        curve: Curves.easeInOut,
+      ),
+    );
+    // _fabReplaceAnimation = CurvedAnimation(
+    //   parent: _filterController,
+    // curve: Interval()
+    // );
     super.initState();
   }
 
@@ -182,13 +205,13 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    const bottomSheetHeight = 380;
-    const topIndicatorListViewHeight = 60.0;
-    const fabWidth = 72.0;
-    const fabMargin = 36.0;
-    const fabIconWidth = 32.0;
-    // WidgetsBinding.instance.addPostFrameCallback((_) => registerPageListener());
     var mq = MediaQuery.of(context);
+    var bottomSheetHeight = 350;
+    var topIndicatorListViewHeight = 60.0;
+    var fabWidth = 72.0;
+    var fabMargin = 36.0;
+    var fabIconWidth = 32.0;
+    // WidgetsBinding.instance.addPostFrameCallback((_) => registerPageListener());
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -232,6 +255,36 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
             ),
           ],
         ),
+
+        // Fab Background 1
+        Positioned(
+          right: -100,
+          left: -100,
+          bottom: -100,
+          top: mq.size.height - bottomSheetHeight - 100,
+          child: IgnorePointer(
+            child: FadeTransition(
+              opacity: _fadeOutAnimation,
+              child: Align(
+                alignment: Alignment.center,
+                child: AnimatedBuilder(
+                  animation: _fabWrapperSizeAnimation,
+                  builder: (context, child) => Container(
+                    height: 92 + (1 - _fabWrapperSizeAnimation.value) * 500,
+                    width: 92 + (1 - _fabWrapperSizeAnimation.value) * 500,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColorDark,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(500),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+
         // Bottom Sheet
         Positioned(
           top: mq.size.height - bottomSheetHeight - topIndicatorListViewHeight,
@@ -240,10 +293,6 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
           bottom: 0,
           child: LayoutBuilder(
             builder: (context, constraints) {
-              var fabIconMaxY = constraints.maxHeight / 2 - 70;
-              var fabIconMaxX = constraints.maxWidth / 2 - 36 - 16 - 16;
-              var fabContainerMaxY = constraints.maxHeight / 2 - 70;
-              var fabContainerMaxX = constraints.maxWidth / 2 - 72;
               return Container(
                 child: Stack(
                   children: [
@@ -589,12 +638,21 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                             AnimatedBuilder(
                               animation: _actionIconTranslateAnimation,
                               child: Consumer<FiltersChangeNotifier>(
-                                builder: (context, fcn, __) => Icon(
-                                  Icons.close,
-                                  size: 30,
-                                  color: fcn.mainStatus == FilterStatus.Changed
-                                      ? Colors.white
-                                      : Color(0xff8EB8C6),
+                                builder: (context, fcn, __) => AnimatedBuilder(
+                                  animation: _fabRotateAnimation,
+                                  builder: (context, child) =>
+                                      RotationTransition(
+                                    turns: _fabRotateAnimation,
+                                    child: child,
+                                  ),
+                                  child: Icon(
+                                    Icons.close,
+                                    size: 30,
+                                    color:
+                                        fcn.mainStatus == FilterStatus.Changed
+                                            ? Colors.white
+                                            : Color(0xff8EB8C6),
+                                  ),
                                 ),
                               ),
                               builder: (context, child) => AnimatedBuilder(
@@ -626,7 +684,8 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                                       // padding: const EdgeInsets.only(top: 4.0,),
                                       // margin: const EdgeInsets.all(24),
                                       child: Opacity(
-                                        opacity: _actionIconTranslateAnimation.value,
+                                        opacity:
+                                            _actionIconTranslateAnimation.value,
                                         child: child,
                                       ),
                                     ),
