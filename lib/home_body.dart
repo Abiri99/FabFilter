@@ -41,7 +41,8 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
   Animation<double> _fadeOutAnimation;
   Animation<double> _fabWrapperSizeAnimation;
   Animation<double> _fabRotateAnimation;
-  Animation<double> _fabReplaceAnimation;
+  Animation<double> _xAxisReplaceAnimation;
+  Animation<double> _yAxisReplaceAnimation;
 
   ScrollController _scrollController;
   PageController _pageController;
@@ -171,12 +172,20 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
         curve: Curves.easeInOut,
       ),
     );
-    _fabReplaceAnimation = CurvedAnimation(
+    _xAxisReplaceAnimation = CurvedAnimation(
       parent: _filterController,
       curve: Interval(
         0.5,
         0.65,
-        curve: Curves.easeInOut,
+        curve: Curves.easeIn,
+      ),
+    );
+    _yAxisReplaceAnimation = CurvedAnimation(
+      parent: _filterController,
+      curve: Interval(
+        0.5,
+        0.65,
+        curve: Curves.easeOut,
       ),
     );
     super.initState();
@@ -261,32 +270,42 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
         ),
 
         // Fab Background 1
-        Positioned(
-          right: -100,
-          left: -100,
-          bottom: -100,
-          top: mq.size.height - bottomSheetHeight - 100,
-          child: IgnorePointer(
-            child: FadeTransition(
-              opacity: _fadeOutAnimation,
-              child: Align(
-                alignment: Alignment.center,
-                child: AnimatedBuilder(
-                  animation: _fabWrapperSizeAnimation,
-                  builder: (context, child) => Container(
-                    height: 86 + (1 - _fabWrapperSizeAnimation.value) * 500,
-                    width: 86 + (1 - _fabWrapperSizeAnimation.value) * 500,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColorDark,
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(500),
+        AnimatedBuilder(
+          animation: _filterController,
+          builder: (context, child) {
+            print("_fabWrapperStatus: ${_fabWrapperSizeAnimation.status}");
+            return Positioned(
+              // left: 0,
+              // right: 0,
+              // bottom: 0,
+              right: 100 * (-1 + _xAxisReplaceAnimation.value),
+              left: _fabWrapperSizeAnimation.isCompleted ? 0 : -100,
+              bottom: 100 * (-1 + _yAxisReplaceAnimation.value),
+              top: mq.size.height - bottomSheetHeight - 100,
+              child: IgnorePointer(
+                child: Align(
+                  alignment: Alignment(
+                    0 + _xAxisReplaceAnimation.value,
+                    0 + _yAxisReplaceAnimation.value,
+                  ),
+                  child: FadeTransition(
+                    opacity: _fadeOutAnimation,
+                    child: Container(
+                      height: 86 + (1 - _fabWrapperSizeAnimation.value) * 500,
+                      width: 86 + (1 - _fabWrapperSizeAnimation.value) * 500,
+                      margin: const EdgeInsets.all(36.0),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColorDark,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(500),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
         ),
 
         // Bottom Sheet
@@ -359,12 +378,6 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                                   (1 - _xAxisPositionAnimation.value),
                                   (1 - _yAxisPositionAnimation.value),
                                 ),
-                                // bottom: (1 - _fabRevealAnimation.value) *
-                                //     (_yAxisPositionAnimation.value *
-                                //         (fabContainerMaxY)),
-                                // right: (1 - _fabRevealAnimation.value) *
-                                //     (_xAxisPositionAnimation.value *
-                                //         (fabContainerMaxX)),
                                 child: GestureDetector(
                                   onTap: () {
                                     if (_controller.status ==
@@ -377,12 +390,12 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                                     animation: _fadeOutAnimation,
                                     child: Container(
                                       height: (_fabRevealAnimation.value) *
-                                          (constraints.maxHeight -
-                                              topIndicatorListViewHeight) +
+                                              (constraints.maxHeight -
+                                                  topIndicatorListViewHeight) +
                                           (1 - _fabRevealAnimation.value) *
                                               fabWidth,
                                       width: (_fabRevealAnimation.value) *
-                                          constraints.maxWidth +
+                                              constraints.maxWidth +
                                           (1 - _fabRevealAnimation.value) *
                                               fabWidth,
                                       margin: EdgeInsets.all(
@@ -394,7 +407,7 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                                       ),
                                       decoration: BoxDecoration(
                                         color:
-                                        Theme.of(context).primaryColorDark,
+                                            Theme.of(context).primaryColorDark,
                                         borderRadius: BorderRadius.all(
                                           Radius.circular(
                                               (1 - _fabRevealAnimation.value) *
@@ -510,11 +523,13 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                               //   ),
                               // ),
                               builder: (context, child) => AnimatedBuilder(
-                                animation: _fadeOutAnimation,
+                                animation: _filterController,
                                 builder: (context, child) => Align(
                                   alignment: Alignment(
-                                    0,
-                                    1 - _fadeOutAnimation.value,
+                                    0 + _xAxisReplaceAnimation.value,
+                                    1 -
+                                        _fadeOutAnimation.value +
+                                        _yAxisReplaceAnimation.value,
                                   ),
                                   // bottom: 0 + _fadeOutAnimation.value * fabIconMaxY,
                                   // right: 0,
@@ -533,6 +548,10 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                                                   (1 -
                                                       _fadeOutAnimation.value) +
                                               fabWidth,
+                                          margin: EdgeInsets.all(
+                                              _fabRotateAnimation.value <= 0
+                                                  ? 0.0
+                                                  : 36.0),
                                           decoration: BoxDecoration(
                                             color: fcn.mainStatus ==
                                                     FilterStatus.Changed
@@ -581,7 +600,8 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                                     child: Container(
                                       height: fabWidth,
                                       width: fabWidth,
-                                      margin: EdgeInsets.all(36.0*(1 - _fabRevealAnimation.value)),
+                                      margin: EdgeInsets.all(36.0 *
+                                          (1 - _fabRevealAnimation.value)),
                                       child: Consumer<FiltersChangeNotifier>(
                                         builder: (context, fcn, __) =>
                                             FilterIcon(
