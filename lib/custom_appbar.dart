@@ -50,7 +50,7 @@ class CustomAppBar extends SliverPersistentHeaderDelegate {
                   child: Align(
                     alignment: Alignment(0, 0.9 - (1-percent) * 0.6),
                     child: Transform.scale(
-                      scale: 1.0 - (1 - percent) * 0.8,
+                      scale: 1.0 - (1 - percent) * 1.0,
                       child: IconButton(
                         icon: Icon(Icons.menu),
                         color: Theme.of(context).primaryColorLight,

@@ -1,3 +1,9 @@
+import 'package:fab_filter/bottom_widgets/action_icons_background.dart';
+import 'package:fab_filter/bottom_widgets/close_icon.dart';
+import 'package:fab_filter/bottom_widgets/fab_background.dart';
+import 'package:fab_filter/bottom_widgets/filter_icon_container.dart';
+import 'package:fab_filter/bottom_widgets/filter_pageview.dart';
+import 'package:fab_filter/bottom_widgets/page_view_indicators.dart';
 import 'package:fab_filter/change_notifier/filter1_change_notifier.dart';
 import 'package:fab_filter/util/enum.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +29,18 @@ class HomeBody extends StatefulWidget {
 }
 
 class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
+  GlobalKey<PageViewIndicatorsState> _pageViewIndicatorsKey =
+      GlobalKey<PageViewIndicatorsState>();
+  GlobalKey<FabBackgroundState> _fabBackgroundKey =
+      GlobalKey<FabBackgroundState>();
+  GlobalKey<FilterPageViewState> _filterPageViewKey =
+      GlobalKey<FilterPageViewState>();
+  GlobalKey<ActionIconsBackgroundState> _actionIconsBackgroundKey =
+      GlobalKey<ActionIconsBackgroundState>();
+  GlobalKey<FilterIconContainerState> _filterIconContainerKey =
+      GlobalKey<FilterIconContainerState>();
+  GlobalKey<CloseIconState> _closeIconKey = GlobalKey<CloseIconState>();
+
   AnimationController _controller;
 
   Animation<double> _listViewAnimation;
@@ -84,6 +102,12 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
       reverseDuration: widget.duration,
       vsync: this,
     );
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed)
+        _filterIconContainerKey.currentState.setControllerCompleted(true);
+      else
+        _filterIconContainerKey.currentState.setControllerCompleted(false);
+    });
     _filterController = AnimationController(
       duration: Duration(milliseconds: widget.duration.inMilliseconds * 3),
       reverseDuration: widget.duration,
@@ -108,6 +132,12 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
         curve: Curves.easeOut,
       ),
     );
+    _xAxisPositionAnimation.addListener(() {
+      _fabBackgroundKey.currentState
+          .setXAxisPositionAnimationValue(_xAxisPositionAnimation.value);
+      _filterIconContainerKey.currentState
+          .setXAxisPositionAnimationValue(_xAxisPositionAnimation.value);
+    });
     _yAxisPositionAnimation = CurvedAnimation(
       parent: _controller,
       curve: Interval(
@@ -116,6 +146,12 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
         curve: Curves.easeIn,
       ),
     );
+    _yAxisPositionAnimation.addListener(() {
+      _fabBackgroundKey.currentState
+          .setYAxisPositionAnimationValue(_yAxisPositionAnimation.value);
+      _filterIconContainerKey.currentState
+          .setYAxisPositionAnimationValue(_yAxisPositionAnimation.value);
+    });
     _fabRevealAnimation = CurvedAnimation(
       parent: _controller,
       curve: Interval(
@@ -124,6 +160,12 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
         curve: Curves.easeInOut,
       ),
     );
+    _fabRevealAnimation.addListener(() {
+      _fabBackgroundKey.currentState
+          .setFabRevealAnimationValue(_fabRevealAnimation.value);
+      _filterIconContainerKey.currentState
+          .setFabRevealAnimationValue(_fabRevealAnimation.value);
+    });
     _fabIconFallAnimation = CurvedAnimation(
       parent: _controller,
       curve: Interval(
@@ -140,6 +182,13 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
         curve: Curves.easeOut,
       ),
     );
+    _actionIconTranslateAnimation.addListener(() {
+      _filterIconContainerKey.currentState
+          .setActionIconsTranslateAnimationValue(
+              _actionIconTranslateAnimation.value);
+      _closeIconKey.currentState.setActionIconTranslateAnimationValue(
+          _actionIconTranslateAnimation.value);
+    });
     _filterSheetAnimation = CurvedAnimation(
       parent: _controller,
       curve: Interval(
@@ -148,6 +197,14 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
         curve: Curves.easeOut,
       ),
     );
+    _filterSheetAnimation.addListener(() {
+      _pageViewIndicatorsKey.currentState
+          .setFilterSheetAnimation(_filterSheetAnimation.value);
+      _filterPageViewKey.currentState
+          .setFilterSheetAnimationValue(_filterSheetAnimation.value);
+      _actionIconsBackgroundKey.currentState
+          .setFilterSheetAnimationValue(_filterSheetAnimation.value);
+    });
     _fadeOutAnimation = CurvedAnimation(
       parent: _filterController,
       curve: Interval(
@@ -156,6 +213,20 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
         curve: Curves.easeOut,
       ),
     );
+    _fadeOutAnimation.addListener(() {
+      _pageViewIndicatorsKey.currentState
+          .setFadeOutAnimationValue(_fadeOutAnimation.value);
+      _fabBackgroundKey.currentState
+          .setFadeOutAnimation(_fadeOutAnimation.value);
+      _filterPageViewKey.currentState
+          .setFadeOutAnimationValue(_fadeOutAnimation.value);
+      _filterIconContainerKey.currentState
+          .setFadeOutAnimationValue(_fadeOutAnimation.value);
+      _closeIconKey.currentState
+          .setFadeOutAnimationValue(_fadeOutAnimation.value);
+      _actionIconsBackgroundKey.currentState
+          .setFadeOutAnimationValue(_fadeOutAnimation.value);
+    });
     _fabWrapperSizeAnimation = CurvedAnimation(
       parent: _filterController,
       curve: Interval(
@@ -164,6 +235,9 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
         curve: Curves.elasticIn,
       ),
     );
+    _fabWrapperSizeAnimation.addListener(() {
+      _fabBackgroundKey.currentState.fabWrapperSizeAnimationValue = _fabWrapperSizeAnimation.value;
+    });
     _fabRotateAnimation = CurvedAnimation(
       parent: _filterController,
       curve: Interval(
@@ -172,6 +246,10 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
         curve: Curves.easeInOut,
       ),
     );
+    _fabRotateAnimation.addListener(() {
+      _closeIconKey.currentState
+          .setFabRotationAnimationValue(_fabRotateAnimation.value);
+    });
     _xAxisReplaceAnimation = CurvedAnimation(
       parent: _filterController,
       curve: Interval(
@@ -270,43 +348,43 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
         ),
 
         // Fab Background 1
-        AnimatedBuilder(
-          animation: _filterController,
-          builder: (context, child) {
-            print("_fabWrapperStatus: ${_fabWrapperSizeAnimation.status}");
-            return Positioned(
-              // left: 0,
-              // right: 0,
-              // bottom: 0,
-              right: 100 * (-1 + _xAxisReplaceAnimation.value),
-              left: _fabWrapperSizeAnimation.isCompleted ? 0 : -100,
-              bottom: 100 * (-1 + _yAxisReplaceAnimation.value),
-              top: mq.size.height - bottomSheetHeight - 100,
-              child: IgnorePointer(
-                child: Align(
-                  alignment: Alignment(
-                    0 + _xAxisReplaceAnimation.value,
-                    0 + _yAxisReplaceAnimation.value,
-                  ),
-                  child: FadeTransition(
-                    opacity: _fadeOutAnimation,
-                    child: Container(
-                      height: 86 + (1 - _fabWrapperSizeAnimation.value) * 500,
-                      width: 86 + (1 - _fabWrapperSizeAnimation.value) * 500,
-                      margin: const EdgeInsets.all(36.0),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColorDark,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(500),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
+        // AnimatedBuilder(
+        //   animation: _filterController,
+        //   builder: (context, child) {
+        //     print("_fabWrapperStatus: ${_fabWrapperSizeAnimation.status}");
+        //     return Positioned(
+        //       // left: 0,
+        //       // right: 0,
+        //       // bottom: 0,
+        //       right: 100 * (-1 + _xAxisReplaceAnimation.value),
+        //       left: _fabWrapperSizeAnimation.isCompleted ? 0 : -100,
+        //       bottom: 100 * (-1 + _yAxisReplaceAnimation.value),
+        //       top: mq.size.height - bottomSheetHeight - 100,
+        //       child: IgnorePointer(
+        //         child: Align(
+        //           alignment: Alignment(
+        //             0 + _xAxisReplaceAnimation.value,
+        //             0 + _yAxisReplaceAnimation.value,
+        //           ),
+        //           child: FadeTransition(
+        //             opacity: _fadeOutAnimation,
+        //             child: Container(
+        //               height: 86 + (1 - _fabWrapperSizeAnimation.value) * 500,
+        //               width: 86 + (1 - _fabWrapperSizeAnimation.value) * 500,
+        //               margin: const EdgeInsets.all(36.0),
+        //               decoration: BoxDecoration(
+        //                 color: Theme.of(context).primaryColorDark,
+        //                 borderRadius: BorderRadius.all(
+        //                   Radius.circular(500),
+        //                 ),
+        //               ),
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //     );
+        //   },
+        // ),
 
         // Bottom Sheet
         Positioned(
@@ -320,45 +398,11 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                 child: Stack(
                   children: [
                     // PageView Indicators
-                    Consumer<FiltersChangeNotifier>(
-                      builder: (context, fcn, __) => AnimatedBuilder(
-                        animation: _filterSheetAnimation,
-                        child: ChangeNotifierProvider.value(
-                          value: fcn,
-                          child: AnimatedBuilder(
-                            animation: _fadeOutAnimation,
-                            builder: (context, child) => Opacity(
-                              opacity: 1 - _fadeOutAnimation.value,
-                              child: Container(
-                                alignment: Alignment.center,
-                                color: Color(0xff164A6D),
-                                child: FilterPageViewIndicatorList(
-                                  scrollController: _scrollController,
-                                  currentPage: fcn.currentPage,
-                                  pageChangeCallback: animateToPage,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        builder: (context, child) => Positioned(
-                          top: (1 - _filterSheetAnimation.value) * 64 + 0,
-                          left: 0,
-                          right: 0,
-                          bottom: constraints.maxHeight -
-                              64 -
-                              ((1 - _filterSheetAnimation.value) * 86),
-                          child: IgnorePointer(
-                            ignoring:
-                                _filterSheetAnimation.value == 0 ? true : false,
-                            child: Opacity(
-                              opacity:
-                                  _filterSheetAnimation.value == 0 ? 0.0 : 1.0,
-                              child: child,
-                            ),
-                          ),
-                        ),
-                      ),
+                    PageViewIndicators(
+                      key: _pageViewIndicatorsKey,
+                      constraints: constraints,
+                      animateToPage: animateToPage,
+                      scrollController: _scrollController,
                     ),
 
                     Positioned(
@@ -371,350 +415,52 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                           fit: StackFit.expand,
                           children: [
                             // Fab background
-                            AnimatedBuilder(
-                              animation: _fabRevealAnimation,
-                              builder: (context, child) => Align(
-                                alignment: Alignment(
-                                  (1 - _xAxisPositionAnimation.value),
-                                  (1 - _yAxisPositionAnimation.value),
-                                ),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    if (_controller.status ==
-                                        AnimationStatus.completed)
-                                      _controller.reverse();
-                                    else
-                                      _controller.forward();
-                                  },
-                                  child: AnimatedBuilder(
-                                    animation: _fadeOutAnimation,
-                                    child: Container(
-                                      height: (_fabRevealAnimation.value) *
-                                              (constraints.maxHeight -
-                                                  topIndicatorListViewHeight) +
-                                          (1 - _fabRevealAnimation.value) *
-                                              fabWidth,
-                                      width: (_fabRevealAnimation.value) *
-                                              constraints.maxWidth +
-                                          (1 - _fabRevealAnimation.value) *
-                                              fabWidth,
-                                      margin: EdgeInsets.all(
-                                          (1 - _fabRevealAnimation.value) *
-                                              fabMargin),
-                                      padding: const EdgeInsets.all(32),
-                                      child: Center(
-                                        child: SizedBox(),
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color:
-                                            Theme.of(context).primaryColorDark,
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(
-                                              (1 - _fabRevealAnimation.value) *
-                                                  500),
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black26,
-                                            offset: Offset(0, 15),
-                                            blurRadius: 15,
-                                            spreadRadius: -8,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    builder: (context, child) => Opacity(
-                                      opacity: 1 - _fadeOutAnimation.value,
-                                      child: child,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                            FabBackground(
+                              key: _fabBackgroundKey,
+                              tapCallback: () {
+                                if (_controller.status ==
+                                    AnimationStatus.completed)
+                                  _controller.reverse();
+                                else
+                                  _controller.forward();
+                              },
+                              constraints: constraints,
+                              topIndicatorListViewHeight:
+                                  topIndicatorListViewHeight,
+                              fabWidth: fabWidth,
+                              fabMargin: fabMargin,
                             ),
 
                             // Filter PageView
-                            AnimatedBuilder(
-                              animation: _filterSheetAnimation,
-                              child: Consumer<FiltersChangeNotifier>(
-                                builder: (_, filtersChangeNotifier, __) =>
-                                    AnimatedBuilder(
-                                  animation: _fadeOutAnimation,
-                                  builder: (context, child) => Opacity(
-                                    opacity: 1 - _fadeOutAnimation.value,
-                                    child: child,
-                                  ),
-                                  child: Container(
-                                    child: PageView.builder(
-                                      physics: BouncingScrollPhysics(),
-                                      controller: _pageController,
-                                      itemCount:
-                                          filtersChangeNotifier.filters.length,
-                                      itemBuilder: (context, position) {
-                                        return filtersChangeNotifier.filters
-                                                    .elementAt(position)
-                                                    .runtimeType ==
-                                                Filter2ChangeNotifier
-                                            ? ChangeNotifierProvider.value(
-                                                value: filtersChangeNotifier
-                                                        .filters[position]
-                                                    as Filter2ChangeNotifier,
-                                                child: Consumer<
-                                                    Filter2ChangeNotifier>(
-                                                  builder: (context, fcn, __) =>
-                                                      FilterView2(
-                                                    fcn: fcn,
-                                                    // key: ValueKey(
-                                                    // filtersChangeNotifier
-                                                    //         .filters[position]
-                                                    //     ["status"],
-                                                    // ),
-                                                  ),
-                                                ),
-                                              )
-                                            : ChangeNotifierProvider.value(
-                                                value: filtersChangeNotifier
-                                                        .filters[position]
-                                                    as Filter1ChangeNotifier,
-                                                child: Consumer<
-                                                    Filter1ChangeNotifier>(
-                                                  builder: (context, fcn, __) =>
-                                                      FilterView(
-                                                    fcn: fcn,
-                                                    position: position,
-                                                    // key: ValueKey(
-                                                    //   filtersChangeNotifier
-                                                    //           .filters[position]
-                                                    //       ["status"],
-                                                    // ),
-                                                  ),
-                                                ),
-                                              );
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              builder: (context, child) => IgnorePointer(
-                                ignoring: _filterSheetAnimation.value == 1.0
-                                    ? false
-                                    : true,
-                                child: Transform.translate(
-                                  offset: Offset(0,
-                                      36 * (1 - _filterSheetAnimation.value)),
-                                  child: FadeTransition(
-                                    opacity: _filterSheetAnimation,
-                                    child: child,
-                                  ),
-                                ),
-                              ),
+                            FilterPageView(
+                              key: _filterPageViewKey,
+                              pageController: _pageController,
                             ),
 
                             // Action Icons Background Container
-                            AnimatedBuilder(
-                              animation: _filterSheetAnimation,
-                              // child: Consumer<FiltersChangeNotifier>(
-                              //   builder: (context, fcn, _) => AnimatedContainer(
-                              //     duration: Duration(milliseconds: 200),
-                              //     height: 64,
-                              //     width: constraints.maxWidth * (1 - _fadeOutAnimation.value) + 64,
-                              //     color: fcn.mainStatus == FilterStatus.Changed
-                              //         ? Theme.of(context).accentColor
-                              //         : Color(0xff33779C),
-                              //   ),
-                              // ),
-                              builder: (context, child) => AnimatedBuilder(
-                                animation: _filterController,
-                                builder: (context, child) => Align(
-                                  alignment: Alignment(
-                                    0 + _xAxisReplaceAnimation.value,
-                                    1 -
-                                        _fadeOutAnimation.value +
-                                        _yAxisReplaceAnimation.value,
-                                  ),
-                                  // bottom: 0 + _fadeOutAnimation.value * fabIconMaxY,
-                                  // right: 0,
-                                  // left: 0,
-                                  child: IgnorePointer(
-                                    ignoring: true,
-                                    child: Opacity(
-                                      opacity:
-                                          1.0 * _filterSheetAnimation.value,
-                                      child: Consumer<FiltersChangeNotifier>(
-                                        builder: (context, fcn, _) =>
-                                            AnimatedContainer(
-                                          duration: Duration(milliseconds: 200),
-                                          height: fabWidth,
-                                          width: constraints.maxWidth *
-                                                  (1 -
-                                                      _fadeOutAnimation.value) +
-                                              fabWidth,
-                                          margin: EdgeInsets.all(
-                                              _fabRotateAnimation.value <= 0
-                                                  ? 0.0
-                                                  : 36.0),
-                                          decoration: BoxDecoration(
-                                            color: fcn.mainStatus ==
-                                                    FilterStatus.Changed
-                                                ? Theme.of(context).accentColor
-                                                : Color(0xff33779C),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(100 *
-                                                    _fadeOutAnimation.value)),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                            ActionIconsBackground(
+                              key: _actionIconsBackgroundKey,
+                              fabWidth: fabWidth,
+                              constraints: constraints,
                             ),
 
                             // Filter Icon
-                            AnimatedBuilder(
-                              animation: _controller,
-                              // child: Container(
-                              //   height: fabWidth,
-                              //   width: fabWidth,
-                              //   margin: EdgeInsets.all(36.0 - 36 * _controller.value),
-                              //   child: Consumer<FiltersChangeNotifier>(
-                              //     builder: (context, fcn, __) => FilterIcon(
-                              //         color:
-                              //             fcn.mainStatus == FilterStatus.Changed
-                              //                 ? Colors.white
-                              //                 : null),
-                              //   ),
-                              // ),
-                              builder: (context, child) => AnimatedBuilder(
-                                animation: _filterController,
-                                child: IgnorePointer(
-                                  ignoring: _controller.status !=
-                                      AnimationStatus.completed,
-                                  child: GestureDetector(
-                                    behavior: HitTestBehavior.opaque,
-                                    // behavior: _controller.status == AnimationStatus.completed ? HitTestBehavior.opaque : HitTestBehavior.deferToChild,
-                                    onTap: () {
-                                      if (_controller.status ==
-                                          AnimationStatus.completed)
-                                        _filterController.forward();
-                                    },
-                                    child: Container(
-                                      height: fabWidth,
-                                      width: fabWidth,
-                                      margin: EdgeInsets.all(36.0 *
-                                          (1 - _fabRevealAnimation.value)),
-                                      child: Consumer<FiltersChangeNotifier>(
-                                        builder: (context, fcn, __) =>
-                                            FilterIcon(
-                                                color: fcn.mainStatus ==
-                                                        FilterStatus.Changed
-                                                    ? Colors.white
-                                                    : null),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                builder: (context, child) => Align(
-                                  alignment: Alignment(
-                                    (1 - _xAxisPositionAnimation.value) +
-                                        (_actionIconTranslateAnimation.value *
-                                            0.6) -
-                                        (_fadeOutAnimation.value * 0.6),
-                                    (1 - _yAxisPositionAnimation.value) +
-                                        (_fabRevealAnimation.value) -
-                                        (_fadeOutAnimation.value),
-                                  ),
-                                  // alignment: _xAxisPositionAnimation.status == AnimationStatus.forward ? Alignment(
-                                  //   (1 - _xAxisPositionAnimation.value),
-                                  //   (1 - _yAxisPositionAnimation.value),
-                                  // ) : _fabRevealAnimation.status == AnimationStatus.forward ? Alignment(
-                                  //   0,
-                                  //   _fabRevealAnimation.value,
-                                  // ) : Alignment(
-                                  //   _actionIconTranslateAnimation.value,
-                                  //   1.0,
-                                  // ),
-                                  child: Opacity(
-                                    opacity: 1 - _fadeOutAnimation.value,
-                                    child: child,
-                                  ),
-                                ),
-                                // builder: (context, child) => Positioned(
-                                //   bottom: (1 - _fabIconFallAnimation.value) *
-                                //       (_yAxisPositionAnimation.value *
-                                //           (fabIconMaxY)) +
-                                //       16 +
-                                //       (1 - _fabIconFallAnimation.value) * 40 +
-                                //       _fadeOutAnimation.value *
-                                //           (fabIconMaxY),
-                                //   right: (_xAxisPositionAnimation.value *
-                                //       (fabIconMaxX)) -
-                                //       (_actionIconTranslateAnimation.value *
-                                //           constraints.maxWidth /
-                                //           4) +
-                                //       _fadeOutAnimation.value * fabIconMaxX + 36 + 36 - 16,
-                                //   child: child,
-                                // ),
-                              ),
+                            FilterIconContainer(
+                              key: _filterIconContainerKey,
+                              fabWidth: fabWidth,
+                              constraints: constraints,
+                              filterControllerCallback: () {
+                                _filterController.forward();
+                              },
                             ),
 
                             // Close Icon
-                            AnimatedBuilder(
-                              animation: _actionIconTranslateAnimation,
-                              child: Consumer<FiltersChangeNotifier>(
-                                builder: (context, fcn, __) => AnimatedBuilder(
-                                  animation: _fabRotateAnimation,
-                                  builder: (context, child) =>
-                                      RotationTransition(
-                                    turns: _fabRotateAnimation,
-                                    child: child,
-                                  ),
-                                  child: Icon(
-                                    Icons.close,
-                                    size: 30,
-                                    color:
-                                        fcn.mainStatus == FilterStatus.Changed
-                                            ? Colors.white
-                                            : Color(0xff8EB8C6),
-                                  ),
-                                ),
-                              ),
-                              builder: (context, child) => AnimatedBuilder(
-                                animation: _fadeOutAnimation,
-                                builder: (context, _) => Align(
-                                  alignment: Alignment(
-                                    -1.0 +
-                                        (_actionIconTranslateAnimation.value *
-                                            0.4) +
-                                        (0.6 * _fadeOutAnimation.value),
-                                    1.0 - _fadeOutAnimation.value,
-                                  ),
-                                  // bottom: 16,
-                                  // left: _actionIconTranslateAnimation.value *
-                                  //     (constraints.maxWidth / 5),
-
-                                  // left: 16 +
-                                  //     (_actionIconTranslateAnimation.value *
-                                  //         constraints.maxWidth /
-                                  //         4) -
-                                  //     0,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      _controller.reverse();
-                                    },
-                                    child: Container(
-                                      height: fabWidth,
-                                      width: fabWidth,
-                                      // padding: const EdgeInsets.only(top: 4.0,),
-                                      // margin: const EdgeInsets.all(24),
-                                      child: Opacity(
-                                        opacity:
-                                            _actionIconTranslateAnimation.value,
-                                        child: child,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                            CloseIcon(
+                              key: _closeIconKey,
+                              tapCallback: () {
+                                _controller.reverse();
+                              },
+                              fabWidth: fabWidth,
                             ),
                           ],
                         ),
