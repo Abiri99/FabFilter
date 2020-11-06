@@ -4,14 +4,14 @@ import 'package:fab_filter/bottom_widgets/fab_background.dart';
 import 'package:fab_filter/bottom_widgets/filter_icon_container.dart';
 import 'package:fab_filter/bottom_widgets/filter_pageview.dart';
 import 'package:fab_filter/bottom_widgets/page_view_indicators.dart';
-import 'package:fab_filter/bottom_widgets2/aibs.dart';
-import 'package:fab_filter/bottom_widgets2/fpv.dart';
-import 'package:fab_filter/bottom_widgets2/pvi.dart';
+import 'package:fab_filter/widgets/aibs.dart';
+import 'package:fab_filter/widgets/fpv.dart';
+import 'package:fab_filter/widgets/pvi.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'bottom_widgets2/ci.dart';
-import 'bottom_widgets2/custom_listview.dart';
-import 'bottom_widgets2/fic.dart';
+import 'widgets/ci.dart';
+import 'widgets/custom_listview.dart';
+import 'widgets/fic.dart';
 import 'change_notifier/filters_change_notifier.dart';
 import 'custom_appbar.dart';
 import 'list_item.dart';
@@ -320,15 +320,16 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
               alignment: Alignment.bottomCenter,
               children: [
                 PVI(
-                  // key: UniqueKey(),
-                  filterSheetAnimation: _filterSheetAnimation,
-                  fadeOutAnimation: _fadeOutAnimation,
+                  animationController: _controller.view,
+                  filterAnimationController: _filterController.view,
                   topIndicatorListHeight: topIndicatorListViewHeight,
                   scrollController: _scrollController,
                   animateToPage: animateToPage,
                   fpvHeight: fpvHeight,
                 ),
                 FabBackground(
+                  animationController: _controller,
+                  filterAnimationController: _filterController,
                   constraints: constraints,
                   topIndicatorListViewHeight: topIndicatorListViewHeight,
                   fabWidth: fabWidth,
@@ -336,50 +337,46 @@ class _HomeBodyState extends State<HomeBody> with TickerProviderStateMixin {
                   tapCallback: () {
                     _controller.forward();
                   },
-                  fabRevealAnimation: _fabRevealAnimation,
-                  fadeOutAnimation: _fadeOutAnimation,
-                  xAxisPositionAnimation: _xAxisPositionAnimation,
-                  yAxisPositionAnimation: _yAxisPositionAnimation,
-                  fabWrapperSizeAnimation: _fabWrapperSizeAnimation,
                   fpvHeight: fpvHeight,
                 ),
                 FPV(
                   pageController: _pageController,
-                  filterSheetAnimation: _filterSheetAnimation,
-                  fadeOutAnimation: _fadeOutAnimation,
+                  animationController: _controller.view,
+                  filterAnimationController: _filterController.view,
                   topIndicatorListViewHeight: topIndicatorListViewHeight,
                   fpvHeight: fpvHeight,
                 ),
                 AIBS(
                   fabWidth: fabWidth,
                   constraints: constraints,
-                  xAxisPositionAnimation: _xAxisPositionAnimation,
-                  yAxisPositionAnimation: _yAxisPositionAnimation,
-                  fadeOutAnimation: _fadeOutAnimation,
-                  fabRotateAnimation: _fabRotateAnimation,
-                  filterSheetAnimation: _filterSheetAnimation,
+                  animationController: _controller.view,
+                  filterAnimationController: _filterController.view,
                 ),
                 FIC(
+                  animationController: _controller.view,
+                  filterAnimationController: _filterController.view,
                   fabWidth: fabWidth,
                   constraints: constraints,
                   filterControllerCallback: () {
                     _filterController.forward();
                   },
                   fpvHeight: fpvHeight,
-                  xAxisPositionAnimation: _xAxisPositionAnimation,
-                  yAxisPositionAnimation: _yAxisPositionAnimation,
-                  fadeOutAnimation: _fadeOutAnimation,
-                  fabRevealAnimation: _fabRevealAnimation,
-                  actionIconsTranslateAnimation: _actionIconTranslateAnimation,
+                  // xAxisPositionAnimation: _xAxisPositionAnimation,
+                  // yAxisPositionAnimation: _yAxisPositionAnimation,
+                  // fadeOutAnimation: _fadeOutAnimation,
+                  // fabRevealAnimation: _fabRevealAnimation,
+                  // actionIconsTranslateAnimation: _actionIconTranslateAnimation,
                 ),
                 CI(
+                  animationController: _controller.view,
+                  filterAnimationController: _filterController.view,
                   tapCallback: () {
                     _controller.reverse();
                   },
                   fabWidth: fabWidth,
-                  fadeOutAnimation: _fadeOutAnimation,
-                  fabRotationAnimation: _fabRotateAnimation,
-                  actionIconTranslateAnimation: _actionIconTranslateAnimation,
+                  // fadeOutAnimation: _fadeOutAnimation,
+                  // fabRotationAnimation: _fabRotateAnimation,
+                  // actionIconTranslateAnimation: _actionIconTranslateAnimation,
                 ),
               ],
             ),

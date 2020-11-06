@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
 class FabBackground extends StatefulWidget {
-  final Animation<double> fabRevealAnimation;
-  final Animation<double> fadeOutAnimation;
-  final Animation<double> xAxisPositionAnimation;
-  final Animation<double> yAxisPositionAnimation;
-  final Animation<double> fabWrapperSizeAnimation;
+  final AnimationController filterAnimationController;
+  final AnimationController animationController;
+
+  // final Animation<double> fabRevealAnimation;
+  // final Animation<double> fadeOutAnimation;
+  // final Animation<double> xAxisPositionAnimation;
+  // final Animation<double> yAxisPositionAnimation;
+  // final Animation<double> fabWrapperSizeAnimation;
 
   final BoxConstraints constraints;
   final double topIndicatorListViewHeight;
@@ -21,23 +24,22 @@ class FabBackground extends StatefulWidget {
     @required this.fabWidth,
     @required this.fabMargin,
     @required this.tapCallback,
-    @required this.fabRevealAnimation,
-    @required this.fadeOutAnimation,
-    @required this.xAxisPositionAnimation,
-    @required this.yAxisPositionAnimation,
-    @required this.fabWrapperSizeAnimation,
+    @required this.filterAnimationController,
+    @required this.animationController,
+    // @required this.fabRevealAnimation,
+    // @required this.fadeOutAnimation,
+    // @required this.xAxisPositionAnimation,
+    // @required this.yAxisPositionAnimation,
+    // @required this.fabWrapperSizeAnimation,
     @required this.fpvHeight,
   })  : assert(constraints != null),
         assert(topIndicatorListViewHeight != null),
         assert(fabWidth != null),
         assert(fabMargin != null),
         assert(tapCallback != null),
-        assert(fabRevealAnimation != null),
-        assert(fadeOutAnimation != null),
-        assert(xAxisPositionAnimation != null),
-        assert(yAxisPositionAnimation != null),
-        assert(fabWrapperSizeAnimation != null),
         assert(fpvHeight != null),
+        assert(animationController != null),
+        assert(filterAnimationController != null),
         super(key: key);
 
   @override
@@ -45,27 +47,64 @@ class FabBackground extends StatefulWidget {
 }
 
 class FabBackgroundState extends State<FabBackground> {
+
+  Animation<double> revealAnimation;
+  Animation<double> fadeOutAnimation;
+  Animation<double> xAxisPositionAnimation;
+  Animation<double> yAxisPositionAnimation;
+  Animation<double> wrapperSizeAnimation;
+
   animationListener() {
     setState(() {});
   }
 
   @override
   void initState() {
-    widget.yAxisPositionAnimation.addListener(animationListener);
-    widget.xAxisPositionAnimation.addListener(animationListener);
-    widget.fabRevealAnimation.addListener(animationListener);
-    widget.fadeOutAnimation.addListener(animationListener);
-    widget.fabWrapperSizeAnimation.addListener(animationListener);
+    revealAnimation = CurvedAnimation(
+      parent: widget.animationController,
+      curve: Interval(
+        0.2,
+        0.5,
+        curve: Curves.easeInOut,
+      ),
+    );
+    fadeOutAnimation = CurvedAnimation(
+      parent: widget.filterAnimationController,
+      curve: Interval(
+        0.0,
+        0.1,
+        curve: Curves.easeOut,
+      ),
+    );
+    xAxisPositionAnimation = CurvedAnimation(
+      parent: widget.animationController,
+      curve: Interval(
+        0,
+        0.2,
+        curve: Curves.easeOut,
+      ),
+    );
+    yAxisPositionAnimation = CurvedAnimation(
+      parent: widget.animationController,
+      curve: Interval(
+        0,
+        0.2,
+        curve: Curves.easeIn,
+      ),
+    );
+    wrapperSizeAnimation = CurvedAnimation(
+      parent: widget.filterAnimationController,
+      curve: Interval(
+        0.0,
+        0.15,
+        curve: Curves.elasticIn,
+      ),
+    );
     super.initState();
   }
 
   @override
   void dispose() {
-    widget.yAxisPositionAnimation.removeListener(animationListener);
-    widget.xAxisPositionAnimation.removeListener(animationListener);
-    widget.fabRevealAnimation.removeListener(animationListener);
-    widget.fadeOutAnimation.removeListener(animationListener);
-    widget.fabWrapperSizeAnimation.removeListener(animationListener);
     super.dispose();
   }
 
@@ -77,41 +116,51 @@ class FabBackgroundState extends State<FabBackground> {
         onTap: () {
           widget.tapCallback();
         },
-        child: Align(
-          alignment: Alignment(
-            // 0,0.5,
-            1 - widget.xAxisPositionAnimation.value,
-            // 0.5,
-            1 - widget.yAxisPositionAnimation.value * widget.fpvHeight/(widget.constraints.maxHeight),
+        child: AnimatedBuilder(
+          animation: widget.animationController,
+          builder: (context, child) => Align(
+            alignment: Alignment(
+              // 0,0.5,
+              1 - xAxisPositionAnimation.value,
+              // 0.5,
+              1 -
+                  yAxisPositionAnimation.value *
+                      widget.fpvHeight /
+                      (widget.constraints.maxHeight),
+            ),
+            child: child,
           ),
-          child: Transform.scale(
-            // scale: 1,
-            scale: 1 + 7 * widget.fabRevealAnimation.value,
-            child: Container(
-              height: widget.fabWidth,
-              width: widget.fabWidth,
-              margin: EdgeInsets.all(
-                (1 - widget.fabRevealAnimation.value) * widget.fabMargin,
-              ),
-              padding: const EdgeInsets.all(32),
-              child: Center(
-                child: SizedBox(),
-              ),
-              decoration: BoxDecoration(
-                // color: Colors.red,
-                color: Theme.of(context).primaryColorDark,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(500),
-                  // Radius.circular(500 * (1 - widget.fabRevealAnimation.value)),
+          child: AnimatedBuilder(
+            animation: revealAnimation,
+            builder: (context, _) => Transform.scale(
+              // scale: 1,
+              scale: 1 + 7 * revealAnimation.value,
+              child: Container(
+                height: widget.fabWidth,
+                width: widget.fabWidth,
+                margin: EdgeInsets.all(
+                  (1 - revealAnimation.value) * widget.fabMargin,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    offset: Offset(0, 15),
-                    blurRadius: 15,
-                    spreadRadius: -8,
+                padding: const EdgeInsets.all(32),
+                child: Center(
+                  child: SizedBox(),
+                ),
+                decoration: BoxDecoration(
+                  // color: Colors.red,
+                  color: Theme.of(context).primaryColorDark,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(500),
+                    // Radius.circular(500 * (1 - widget.fabRevealAnimation.value)),
                   ),
-                ],
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      offset: Offset(0, 15),
+                      blurRadius: 15,
+                      spreadRadius: -8,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -192,7 +241,6 @@ class FabBackgroundState extends State<FabBackground> {
 }
 
 class FabBackgroundClipper extends CustomClipper<Path> {
-
   final double fpvHeight;
 
   FabBackgroundClipper({this.fpvHeight});
@@ -200,13 +248,13 @@ class FabBackgroundClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path()
-        // ..lineTo(0, size.height)
-        ..moveTo(0, size.height)
-        ..lineTo(size.width, size.height)
-        ..lineTo(size.width, size.height - fpvHeight)
-        ..lineTo(0, size.height - fpvHeight)
-        ..lineTo(0, size.height)
-        ..close();
+      // ..lineTo(0, size.height)
+      ..moveTo(0, size.height)
+      ..lineTo(size.width, size.height)
+      ..lineTo(size.width, size.height - fpvHeight)
+      ..lineTo(0, size.height - fpvHeight)
+      ..lineTo(0, size.height)
+      ..close();
     return path;
   }
 

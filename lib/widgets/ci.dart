@@ -5,25 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CI extends StatefulWidget {
+  final AnimationController animationController;
+  final AnimationController filterAnimationController;
+
   final Function tapCallback;
   final double fabWidth;
-
-  final Animation<double> actionIconTranslateAnimation;
-  final Animation<double> fadeOutAnimation;
-  final Animation<double> fabRotationAnimation;
 
   CI({
     Key key,
     @required this.tapCallback,
     @required this.fabWidth,
-    @required this.fadeOutAnimation,
-    @required this.fabRotationAnimation,
-    @required this.actionIconTranslateAnimation,
+    @required this.animationController,
+    @required this.filterAnimationController,
   })  : assert(tapCallback != null),
         assert(fabWidth != null),
-        assert(actionIconTranslateAnimation != null),
-        assert(fadeOutAnimation != null),
-        assert(fabRotationAnimation != null),
+        assert(animationController != null),
+        assert(filterAnimationController != null),
         super(key: key);
 
   @override
@@ -32,25 +29,41 @@ class CI extends StatefulWidget {
 
 class CIState extends State<CI> {
 
-  animationListener() {
-    setState(() {
-
-    });
-  }
+  Animation<double> actionIconTranslationAnimation;
+  Animation<double> fadeOutAnimation;
+  Animation<double> fabRotationAnimation;
 
   @override
   void initState() {
-    widget.actionIconTranslateAnimation.addListener(animationListener);
-    widget.fabRotationAnimation.addListener(animationListener);
-    widget.fadeOutAnimation.addListener(animationListener);
+    actionIconTranslationAnimation = CurvedAnimation(
+      parent: widget.animationController,
+      curve: Interval(
+        0.5,
+        0.7,
+        curve: Curves.easeOut,
+      ),
+    );
+    fadeOutAnimation = CurvedAnimation(
+      parent: widget.filterAnimationController,
+      curve: Interval(
+        0.0,
+        0.1,
+        curve: Curves.easeOut,
+      ),
+    );
+    fabRotationAnimation = CurvedAnimation(
+      parent: widget.filterAnimationController,
+      curve: Interval(
+        0.25,
+        0.5,
+        curve: Curves.easeInOut,
+      ),
+    );
     super.initState();
   }
 
   @override
   void dispose() {
-    widget.actionIconTranslateAnimation.removeListener(animationListener);
-    widget.fabRotationAnimation.removeListener(animationListener);
-    widget.fadeOutAnimation.removeListener(animationListener);
     super.dispose();
   }
 
@@ -59,9 +72,9 @@ class CIState extends State<CI> {
     return Align(
       alignment: Alignment(
         -1.0 +
-            (widget.actionIconTranslateAnimation.value * 0.4) +
-            (0.6 * widget.fadeOutAnimation.value),
-        1.0 - widget.fadeOutAnimation.value,
+            (actionIconTranslationAnimation.value * 0.4) +
+            (0.6 * fadeOutAnimation.value),
+        1.0 - fadeOutAnimation.value,
       ),
       child: GestureDetector(
         onTap: () {
@@ -74,10 +87,10 @@ class CIState extends State<CI> {
           // padding: const EdgeInsets.only(top: 4.0,),
           // margin: const EdgeInsets.all(24),
           child: Opacity(
-            opacity: widget.actionIconTranslateAnimation.value,
+            opacity: actionIconTranslationAnimation.value,
             child: Consumer<FiltersChangeNotifier>(
               builder: (context, fcn, __) => Transform.rotate(
-                angle: pi * widget.fabRotationAnimation.value,
+                angle: pi * fabRotationAnimation.value,
                 child: Icon(
                   Icons.close,
                   size: 30,

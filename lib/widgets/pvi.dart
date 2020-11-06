@@ -10,13 +10,18 @@ class PVI extends StatefulWidget {
   final double topIndicatorListHeight;
   final double fpvHeight;
 
-  final Animation<double> filterSheetAnimation;
-  final Animation<double> fadeOutAnimation;
+  final AnimationController animationController;
+  final AnimationController filterAnimationController;
+
+  // final Animation<double> filterSheetAnimation;
+  // final Animation<double> fadeOutAnimation;
 
   PVI({
     Key key,
-    @required this.filterSheetAnimation,
-    @required this.fadeOutAnimation,
+    @required this.animationController,
+    @required this.filterAnimationController,
+    // @required this.filterSheetAnimation,
+    // @required this.fadeOutAnimation,
     @required this.topIndicatorListHeight,
     @required this.fpvHeight,
     @required this.scrollController,
@@ -24,8 +29,10 @@ class PVI extends StatefulWidget {
   })  : assert(topIndicatorListHeight != null),
         assert(scrollController != null),
         assert(animateToPage != null),
-        assert(filterSheetAnimation != null),
-        assert(fadeOutAnimation != null),
+        assert(animationController != null),
+        assert(filterAnimationController != null),
+        // assert(filterSheetAnimation != null),
+        // assert(fadeOutAnimation != null),
         assert(fpvHeight != null),
         super(key: key);
 
@@ -44,31 +51,32 @@ class PVI extends StatefulWidget {
 }
 
 class _PVIState extends State<PVI> {
-  // buildLayout() {
-  //   print("built layout...");
-  //   return Container(
-  //     height: widget.controller.value * 200 + 100,
-  //     color: Colors.red,
-  //   );
-  // }
-
-  animationListener() {
-    setState(() {
-
-    });
-  }
+  Animation<double> fadeInAnimation;
+  Animation<double> fadeOutAnimation;
 
   @override
   void initState() {
-    widget.fadeOutAnimation.addListener(animationListener);
-    widget.filterSheetAnimation.addListener(animationListener);
+    fadeInAnimation = CurvedAnimation(
+      parent: widget.animationController,
+      curve: Interval(
+        0.7,
+        1.0,
+        curve: Curves.easeOut,
+      ),
+    );
+    fadeOutAnimation = CurvedAnimation(
+      parent: widget.filterAnimationController,
+      curve: Interval(
+        0.0,
+        0.1,
+        curve: Curves.easeOut,
+      ),
+    );
     super.initState();
   }
 
   @override
   void dispose() {
-    widget.fadeOutAnimation.removeListener(animationListener);
-    widget.filterSheetAnimation.removeListener(animationListener);
     super.dispose();
   }
 
@@ -76,16 +84,18 @@ class _PVIState extends State<PVI> {
   Widget build(BuildContext context) {
     print("built...");
     return Positioned(
-      bottom: widget.fpvHeight - (1 - widget.filterSheetAnimation.value) * widget.topIndicatorListHeight,
+      bottom: widget.fpvHeight -
+          (1 - fadeInAnimation.value) *
+              widget.topIndicatorListHeight,
       child: Consumer<FiltersChangeNotifier>(
         builder: (context, fcn, __) => Container(
           height: widget.topIndicatorListHeight,
           child: IgnorePointer(
-            ignoring: widget.filterSheetAnimation.value == 0,
+            ignoring: fadeInAnimation.value == 0,
             child: Opacity(
-              opacity: widget.filterSheetAnimation.value == 0
+              opacity: fadeInAnimation.value == 0
                   ? 0.0
-                  : 1.0 - widget.fadeOutAnimation.value,
+                  : 1.0 - fadeOutAnimation.value,
               child: ChangeNotifierProvider.value(
                 value: fcn,
                 child: Container(

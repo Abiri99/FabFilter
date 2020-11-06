@@ -8,22 +8,30 @@ import '../filter_view.dart';
 import '../filter_view2.dart';
 
 class FPV extends StatefulWidget {
+  final AnimationController filterAnimationController;
+  final AnimationController animationController;
+
   final PageController pageController;
-  final Animation<double> filterSheetAnimation;
-  final Animation<double> fadeOutAnimation;
+
+  // final Animation<double> filterSheetAnimation;
+  // final Animation<double> fadeOutAnimation;
   final double topIndicatorListViewHeight;
   final double fpvHeight;
 
   FPV({
     Key key,
     @required this.pageController,
-    @required this.filterSheetAnimation,
-    @required this.fadeOutAnimation,
+    @required this.animationController,
+    @required this.filterAnimationController,
+    // @required this.filterSheetAnimation,
+    // @required this.fadeOutAnimation,
     @required this.topIndicatorListViewHeight,
     @required this.fpvHeight,
   })  : assert(pageController != null),
-        assert(filterSheetAnimation != null),
-        assert(fadeOutAnimation != null),
+        assert(animationController != null),
+        assert(filterAnimationController != null),
+        // assert(filterSheetAnimation != null),
+        // assert(fadeOutAnimation != null),
         assert(topIndicatorListViewHeight != null),
         assert(fpvHeight != null),
         super(key: key);
@@ -33,37 +41,45 @@ class FPV extends StatefulWidget {
 }
 
 class FPVState extends State<FPV> {
-  animationListener() {
-    setState(() {});
-  }
+
+  Animation<double> fadeInAnimation;
+  Animation<double> fadeOutAnimation;
 
   @override
   void initState() {
-    widget.filterSheetAnimation.addListener(animationListener);
-    widget.fadeOutAnimation.addListener(animationListener);
+    fadeInAnimation = CurvedAnimation(
+      parent: widget.animationController,
+      curve: Interval(
+        0.7,
+        1.0,
+        curve: Curves.easeOut,
+      ),
+    );
+    fadeOutAnimation = CurvedAnimation(
+      parent: widget.filterAnimationController,
+      curve: Interval(
+        0.0,
+        0.1,
+        curve: Curves.easeOut,
+      ),
+    );
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    widget.filterSheetAnimation.removeListener(animationListener);
-    widget.fadeOutAnimation.removeListener(animationListener);
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return IgnorePointer(
-      ignoring: widget.filterSheetAnimation.value == 1.0 ? false : true,
+      ignoring: fadeInAnimation.value == 1.0 ? false : true,
       child: Opacity(
-        opacity: widget.filterSheetAnimation.value - widget.fadeOutAnimation.value,
+        opacity:
+            fadeInAnimation.value - fadeOutAnimation.value,
         child: Container(
           // color: Colors.white38,
           // Todo: fix this height
           height: widget.fpvHeight,
           // color: Colors.red,
           child: Transform.translate(
-            offset: Offset(0, 36 * (1 - widget.filterSheetAnimation.value)),
+            offset: Offset(0, 36 * (1 - fadeInAnimation.value)),
             child: Consumer<FiltersChangeNotifier>(
               builder: (_, filtersChangeNotifier, __) => PageView.builder(
                 physics: BouncingScrollPhysics(),
